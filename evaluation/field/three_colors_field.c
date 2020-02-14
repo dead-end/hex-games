@@ -42,9 +42,12 @@ const char tile_mask[4][4] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, {
 
 const short _cp_grey[] = { 2, 3, 4 };
 
-#define GRAY_BASE 200
+#define GRAY_BASE 100
 
-#define GRAY_ADD 20
+#define GRAY_ADD 30
+
+#define OFFSET_X 2
+#define OFFSET_Y 1
 
 /***************************************************************************
  * Main
@@ -56,8 +59,8 @@ void print_tile(const int tile_y, const int tile_x, const chtype ch, const short
 
 	attron(COLOR_PAIR(color_pair));
 
-	const int start_y = (tile_x % 2) * 2 + tile_y * 4;
-	const int start_x = tile_x * 3;
+	const int start_y = OFFSET_Y + (tile_x % 2) * 2 + tile_y * 4;
+	const int start_x = OFFSET_X + tile_x * 3;
 
 	for (int y = 0; y < TILE_SIZE; y++) {
 		for (int x = 0; x < TILE_SIZE; x++) {
@@ -97,6 +100,11 @@ int main() {
 	init_pair(_cp_grey[0], COLOR_GREY_2, COLOR_GREY_0);
 	init_pair(_cp_grey[1], COLOR_GREY_0, COLOR_GREY_1);
 	init_pair(_cp_grey[2], COLOR_GREY_1, COLOR_GREY_2);
+
+	init_color(10, 1000 - 2 * GRAY_BASE, 1000 - 2 * GRAY_BASE, 1000 - 2 * GRAY_BASE - 100);
+	init_pair(1, 10, 10);
+
+	bkgd(COLOR_PAIR(1));
 
 	for (int y = 0; y < 5; y++) {
 		for (int x = 0; x < 24; x++) {
