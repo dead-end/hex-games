@@ -42,6 +42,10 @@ const char tile_mask[4][4] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, {
 
 const short _cp_grey[] = { 2, 3, 4 };
 
+#define GRAY_BASE 200
+
+#define GRAY_ADD 20
+
 /***************************************************************************
  * Main
  **************************************************************************/
@@ -86,9 +90,9 @@ int main() {
 		exit(EXIT_FAILURE);
 	}
 
-	init_color(COLOR_GREY_0, 700, 700, 700);
-	init_color(COLOR_GREY_1, 750, 750, 750);
-	init_color(COLOR_GREY_2, 800, 800, 800);
+	init_color(COLOR_GREY_0, GRAY_BASE, GRAY_BASE, GRAY_BASE);
+	init_color(COLOR_GREY_1, GRAY_BASE + GRAY_ADD, GRAY_BASE + GRAY_ADD, GRAY_BASE + GRAY_ADD);
+	init_color(COLOR_GREY_2, GRAY_BASE + 2 * GRAY_ADD, GRAY_BASE + 2 * GRAY_ADD, GRAY_BASE + 2 * GRAY_ADD);
 
 	init_pair(_cp_grey[0], COLOR_GREY_2, COLOR_GREY_0);
 	init_pair(_cp_grey[1], COLOR_GREY_0, COLOR_GREY_1);
