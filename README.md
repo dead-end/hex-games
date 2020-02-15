@@ -8,6 +8,8 @@ field will be stratched.
 
 ![Hex fields](res/hex-fields.png)
 
-The hex fields can be arragnged in two ways, as shown in the following images:
+The hex fields can be arragnged in two ways, as shown in the following image. 
+The first image has an up / down movement while the second one has a left / right
+movement. In the following considerations I will prever the up / down movement.
 
 ![Hex fields](res/hex-field-arrangements.png)
