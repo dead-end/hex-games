@@ -24,9 +24,10 @@
 
 #include <stdlib.h>
 #include <locale.h>
-#include <ncursesw/ncurses.h>
+#include <ncurses.h>
 
 #include "hg_common.h"
+#include "hg_ncurses.h"
 
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
@@ -35,7 +36,7 @@
 
 static void hg_exit_callback() {
 
-	endwin();
+	ncur_exit();
 
 	log_debug_str("Exit callback finished!");
 }
@@ -47,6 +48,8 @@ static void hg_exit_callback() {
 static void hg_init() {
 
 	setlocale(LC_ALL, "");
+
+	ncur_init();
 
 	//
 	// Register exit callback.
@@ -63,18 +66,6 @@ static void hg_init() {
 int main() {
 
 	hg_init();
-
-	if (initscr() == NULL) {
-		fprintf(stderr, "Unable to init screen!\n");
-		exit(EXIT_FAILURE);
-	}
-
-	curs_set(0);
-
-	if (start_color() == ERR) {
-		fprintf(stderr, "Unable to start color!\n");
-		exit(EXIT_FAILURE);
-	}
 
 	getch();
 
