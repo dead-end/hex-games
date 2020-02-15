@@ -101,7 +101,7 @@ int main() {
 	init_pair(_cp_grey[1], COLOR_GREY_0, COLOR_GREY_1);
 	init_pair(_cp_grey[2], COLOR_GREY_1, COLOR_GREY_2);
 
-	init_color(10, 1000 - 2 * GRAY_BASE, 1000 - 2 * GRAY_BASE, 1000 - 2 * GRAY_BASE - 100);
+	init_color(10, 1000 - 3 * GRAY_BASE, 1000 - 3 * GRAY_BASE, 1000 - 3 * GRAY_BASE - 100);
 	init_pair(1, 10, 10);
 
 	bkgd(COLOR_PAIR(1));
