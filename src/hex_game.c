@@ -22,20 +22,64 @@
  * SOFTWARE.
  */
 
+#include <stdlib.h>
+#include <locale.h>
+#include <ncursesw/ncurses.h>
+
 #include "hg_common.h"
 
 /******************************************************************************
- * The function allocates memory and terminates the program in case of an
- * error.
+ * The exit callback function resets the terminal and frees the memory. This is
+ * important if the program terminates after an error.
  *****************************************************************************/
 
-void* xmalloc(const size_t size) {
+static void hg_exit_callback() {
 
-	void *ptr = malloc(size);
+	endwin();
 
-	if (ptr == NULL) {
-		log_exit("Unable to allocate: %zu bytes of memory!", size);
+	log_debug_str("Exit callback finished!");
+}
+
+/***************************************************************************
+ * The initial function of the program.
+ **************************************************************************/
+
+static void hg_init() {
+
+	setlocale(LC_ALL, "");
+
+	//
+	// Register exit callback.
+	//
+	if (on_exit(hg_exit_callback, NULL) != 0) {
+		log_exit_str("Unable to register exit function!");
+	}
+}
+
+/***************************************************************************
+ * Main
+ **************************************************************************/
+
+int main() {
+
+	hg_init();
+
+	if (initscr() == NULL) {
+		fprintf(stderr, "Unable to init screen!\n");
+		exit(EXIT_FAILURE);
 	}
 
-	return ptr;
+	curs_set(0);
+
+	if (start_color() == ERR) {
+		fprintf(stderr, "Unable to start color!\n");
+		exit(EXIT_FAILURE);
+	}
+
+	getch();
+
+	//
+	// Cleanup is handled with the exit callback.
+	//
+	return EXIT_SUCCESS;
 }
