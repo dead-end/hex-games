@@ -53,6 +53,7 @@ LIBS        = $(shell $(NCURSES_CONFIG) --libs) -lm -lmenuw
 
 SRC_LIBS = \
 	$(SRC_DIR)/hg_common.c \
+	$(SRC_DIR)/hg_ncurses.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 
