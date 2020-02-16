@@ -13,3 +13,9 @@ The first image has an up / down movement while the second one has a left / righ
 movement. In the following considerations I will prever the up / down movement.
 
 ![Hex fields](res/hex-field-arrangements.png)
+
+Unlike the previous imapge, a character in ncurses has no border, so you cannot
+tell adjacent hex fields with the same color. One solution is to use different
+colors for adjacent hex fields.
+
+![Hex fields with 3 colors](res/hex-fields-3-colors.png)
