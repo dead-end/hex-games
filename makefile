@@ -56,6 +56,7 @@ SRC_LIBS = \
 	$(SRC_DIR)/hg_ncurses.c \
 	$(SRC_DIR)/hg_color.c \
 	$(SRC_DIR)/hg_color_pair.c \
+	$(SRC_DIR)/hg_hex.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 

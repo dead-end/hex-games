@@ -32,6 +32,8 @@
 #include "hg_color.h"
 #include "hg_color_pair.h"
 
+#include "hg_hex.h"
+
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
@@ -62,6 +64,24 @@ static void hg_init() {
 	}
 }
 
+void print_hex(const int hex_idx_row, const int hex_idx_col, const chtype ch, const short color_pair) {
+
+	const int start_row = hex_start_row(hex_idx_row, hex_idx_col);
+	const int start_col = hex_start_col(hex_idx_row, hex_idx_col);
+
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
+
+			if (hex_is_hex(row, col)) {
+
+				attron(COLOR_PAIR(color_pair));
+
+				mvaddch(start_row + row, start_col + col, ch);
+			}
+		}
+	}
+}
+
 /***************************************************************************
  * Main
  **************************************************************************/
@@ -71,15 +91,26 @@ int main() {
 	hg_init();
 
 	short colors[3];
-	colors[0] = col_color_create(100, 100, 100);
-	colors[1] = col_color_create(200, 200, 200);
-	colors[2] = col_color_create(300, 300, 300);
+	colors[0] = col_color_create(600, 600, 600);
+	colors[1] = col_color_create(700, 700, 700);
+	colors[2] = col_color_create(800, 800, 800);
 
 	cp_color_pair_add(COLOR_WHITE, colors[0]);
 	cp_color_pair_add(COLOR_WHITE, colors[1]);
 	cp_color_pair_add(COLOR_WHITE, colors[2]);
 
 	cp_color_pair_sort();
+
+	for (int row = 0; row < 5; row++) {
+		for (int col = 0; col < 24; col++) {
+
+			const int color_idx = hex_bg_color_idx(row, col);
+
+			const short color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
+
+			print_hex(row, col, L' ', color_pair);
+		}
+	}
 
 	getch();
 
