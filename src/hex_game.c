@@ -29,6 +29,9 @@
 #include "hg_common.h"
 #include "hg_ncurses.h"
 
+#include "hg_color.h"
+#include "hg_color_pair.h"
+
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
@@ -66,6 +69,17 @@ static void hg_init() {
 int main() {
 
 	hg_init();
+
+	short colors[3];
+	colors[0] = col_color_create(100, 100, 100);
+	colors[1] = col_color_create(200, 200, 200);
+	colors[2] = col_color_create(300, 300, 300);
+
+	cp_color_pair_add(COLOR_WHITE, colors[0]);
+	cp_color_pair_add(COLOR_WHITE, colors[1]);
+	cp_color_pair_add(COLOR_WHITE, colors[2]);
+
+	cp_color_pair_sort();
 
 	getch();
 

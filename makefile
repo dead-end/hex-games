@@ -17,7 +17,7 @@ OPTION_FLAGS=
 # stderr to a file.
 ################################################################################
 
-DEBUG = false
+DEBUG = true
 
 ifeq ($(DEBUG),true)
   OPTION_FLAGS += -DDEBUG -g
@@ -54,6 +54,8 @@ LIBS        = $(shell $(NCURSES_CONFIG) --libs) -lm -lmenuw
 SRC_LIBS = \
 	$(SRC_DIR)/hg_common.c \
 	$(SRC_DIR)/hg_ncurses.c \
+	$(SRC_DIR)/hg_color.c \
+	$(SRC_DIR)/hg_color_pair.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 
