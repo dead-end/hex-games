@@ -101,8 +101,8 @@ int main() {
 
 	cp_color_pair_sort();
 
-	for (int row = 0; row < 5; row++) {
-		for (int col = 0; col < 24; col++) {
+	for (int row = 0; row < 3; row++) {
+		for (int col = 0; col < 12; col++) {
 
 			const int color_idx = hex_bg_color_idx(row, col);
 
