@@ -1,5 +1,8 @@
 # hex-games
 
+In this project I want to develop a ncurses based terminal game, which has 
+hexagonal fields.
+
 ## Hex Fields
 
 Hex fields in ncurses have to be constructed with characters. A sinlge field 
@@ -13,6 +16,20 @@ The first image has an up / down movement while the second one has a left / righ
 movement. In the following considerations I will prever the up / down movement.
 
 ![Hex fields](res/hex-field-arrangements.png)
+
+The hex fields can be interpreted as a two dimensional array, like it is shown
+in the next illustration.
+
+![2-dim fields](res/row-col.png)
+
+The upper left corner of the square that contains a hex field can be computed with
+the formula:
+
+```
+start-column = column-index * 3
+
+start-row    = (column-index % 2) * 2 + row-index * 4
+```
 
 Unlike the previous image, a character in ncurses has no border, so you cannot
 tell adjacent hex fields with the same color. One solution is to use different
