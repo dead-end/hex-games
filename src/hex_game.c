@@ -82,6 +82,24 @@ void print_hex(const int hex_idx_row, const int hex_idx_col, const chtype ch, co
 	}
 }
 
+void get_hex_idx(const int win_row, const int win_col, s_point *hex_idx) {
+	log_debug("Event - row %d col: %d", win_row, win_col);
+
+	int col_3_idx = win_col / 3;
+
+	if (win_col % 3 == 0) {
+		hex_idx->row = (win_row - 1) / 4;
+		hex_idx->col = col_3_idx - (((win_row - 1) / 2 + col_3_idx) % 2);
+
+	} else {
+		const int offset = (col_3_idx % 2 == 1) ? 2 : 0;
+		hex_idx->row = (win_row - offset) / 4;
+		hex_idx->col = col_3_idx;
+	}
+
+	log_debug("Hex - row: %d col: %d", hex_idx->row, hex_idx->col);
+}
+
 /***************************************************************************
  * Main
  **************************************************************************/
@@ -99,6 +117,8 @@ int main() {
 	cp_color_pair_add(COLOR_WHITE, colors[1]);
 	cp_color_pair_add(COLOR_WHITE, colors[2]);
 
+	cp_color_pair_add(COLOR_WHITE, COLOR_RED);
+
 	cp_color_pair_sort();
 
 	for (int row = 0; row < 3; row++) {
@@ -112,10 +132,49 @@ int main() {
 		}
 	}
 
-	getch();
+	s_point hex_idx, hex_idx_old;
 
-	//
-	// Cleanup is handled with the exit callback.
-	//
+	s_point_set(&hex_idx_old, -1, -1);
+
+	for (;;) {
+		int c = wgetch(stdscr);
+
+		//
+		// Exit with 'q'
+		//
+		if (c == 'q') {
+			break;
+		}
+
+		if (c == KEY_MOUSE) {
+			MEVENT event;
+
+			if (getmouse(&event) != OK) {
+				log_exit_str("Unable to get mouse event!");
+			}
+
+			get_hex_idx(event.y, event.x, &hex_idx);
+
+			if (!s_point_same(&hex_idx, &hex_idx_old)) {
+				short color_pair;
+
+				const int color_idx = hex_bg_color_idx(hex_idx_old.row, hex_idx_old.col);
+
+				color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
+
+				print_hex(hex_idx_old.row, hex_idx_old.col, L' ', color_pair);
+
+				color_pair = cp_color_pair_get(COLOR_WHITE, COLOR_RED);
+
+				print_hex(hex_idx.row, hex_idx.col, L' ', color_pair);
+
+				s_point_copy(&hex_idx_old, &hex_idx);
+			}
+		}
+	}
+
+//
+// Cleanup is handled with the exit callback.
+//
 	return EXIT_SUCCESS;
 }
