@@ -27,6 +27,39 @@
 #include <ncurses.h>
 
 /******************************************************************************
+ * The function initializes the ncurses mouse support.
+ *****************************************************************************/
+
+static void ncur_init_mouse() {
+
+	if (has_mouse()) {
+		log_exit_str("Terminal does not support a mouse!");
+	}
+
+	//
+	// Register mouse events (which do not have a propper error handling)
+	//
+	mousemask(BUTTON1_RELEASED | BUTTON1_CLICKED | BUTTON1_PRESSED | REPORT_MOUSE_POSITION, NULL);
+
+	printf("\033[?1003h\n");
+
+	mouseinterval(0);
+}
+
+/******************************************************************************
+ * The function finishes the ncurses mouse support.
+ *****************************************************************************/
+
+static void ncur_finish_mouse() {
+
+	//
+	// Disable mouse movement events, as l = low
+	//
+	printf("\033[?1003l\n");
+
+}
+
+/******************************************************************************
  * The function initializes the main features of ncurses .
  *****************************************************************************/
 
@@ -78,6 +111,7 @@ void ncur_init() {
 	//
 	set_escdelay(0);
 
+	ncur_init_mouse();
 }
 
 /******************************************************************************
@@ -90,4 +124,6 @@ void ncur_exit() {
 	// End the windows.
 	//
 	endwin();
+
+	ncur_finish_mouse();
 }
