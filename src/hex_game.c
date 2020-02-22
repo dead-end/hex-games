@@ -46,9 +46,9 @@ static void hg_exit_callback() {
 	log_debug_str("Exit callback finished!");
 }
 
-/***************************************************************************
+/******************************************************************************
  * The initial function of the program.
- **************************************************************************/
+ *****************************************************************************/
 
 static void hg_init() {
 
@@ -82,29 +82,102 @@ void print_hex(const int hex_idx_row, const int hex_idx_col, const chtype ch, co
 	}
 }
 
-void get_hex_idx(const int win_row, const int win_col, s_point *hex_idx) {
-	log_debug("Event - row %d col: %d", win_row, win_col);
+/******************************************************************************
+ * The function computes the hex index from a mouse event, which is the
+ * position of the cursor.
+ *
+ * To compute the index, the columns are split into blocks of 3 columns. There
+ * are two cases which are handled separately:
+ *
+ * - the left column of the block
+ * - the center and right column of the block
+ *
+ * Three hex fields:
+ *
+ *  ##    ##
+ * ####  ####
+ * ####OO####
+ *  ##OOOO##
+ *    OOOO
+ *     OO
+ *
+ * The three hex fields spited into blocks of three columns. The last block is
+ * not complete.
+ *
+ *  ##        ##
+ * ###  #    ###  #
+ * ###  #OO  ###  #
+ *  ##  OOO  O##
+ *      OOO  O
+ *       OO
+ *****************************************************************************/
 
-	int col_3_idx = win_col / 3;
+void get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max) {
 
+	const int col_3_idx = win_col / 3;
+
+	//
+	// Handle the left column of the block
+	//
 	if (win_col % 3 == 0) {
-		hex_idx->row = (win_row - 1) / 4;
-		hex_idx->col = col_3_idx - (((win_row - 1) / 2 + col_3_idx) % 2);
+		const int win_row_offset = win_row - 1;
 
-	} else {
-		const int offset = (col_3_idx % 2 == 1) ? 2 : 0;
-		hex_idx->row = (win_row - offset) / 4;
-		hex_idx->col = col_3_idx;
+		if (win_row_offset < 0) {
+			s_point_set(hex_idx, -1, -1);
+
+		} else {
+			hex_idx->col = col_3_idx - ((win_row_offset / 2 + col_3_idx) % 2);
+
+			if (hex_idx->col < 0) {
+				s_point_set(hex_idx, -1, -1);
+
+			} else {
+				hex_idx->row = win_row_offset / 4;
+			}
+		}
+
 	}
 
-	log_debug("Hex - row: %d col: %d", hex_idx->row, hex_idx->col);
+	//
+	// Handle the center and right column of the block.
+	//
+	else {
+
+		//
+		// The rows have toggling offset of 0 and 2.
+		//
+		const int win_row_offset = win_row - ((col_3_idx % 2 == 1) ? 2 : 0);
+
+		if (win_row_offset < 0) {
+			s_point_set(hex_idx, -1, -1);
+
+		} else {
+			hex_idx->row = win_row_offset / 4;
+			hex_idx->col = col_3_idx;
+		}
+	}
+
+	//
+	// Ensure that the hex index is inside the valid ranges.
+	//
+	if (hex_idx->row >= hex_max->row || hex_idx->col >= hex_max->col) {
+		s_point_set(hex_idx, -1, -1);
+	}
+
+	log_debug("Event - row %d col: %d hex - row: %d col: %d", win_row, win_col, hex_idx->row, hex_idx->col);
 }
 
-/***************************************************************************
+/******************************************************************************
  * Main
- **************************************************************************/
+ *****************************************************************************/
 
 int main() {
+
+	s_point hex_idx, hex_idx_old, hex_max;
+
+	s_point_set(&hex_idx_old, -1, -1);
+
+	s_point_set(&hex_max, 3, 12);
 
 	hg_init();
 
@@ -121,8 +194,8 @@ int main() {
 
 	cp_color_pair_sort();
 
-	for (int row = 0; row < 3; row++) {
-		for (int col = 0; col < 12; col++) {
+	for (int row = 0; row < hex_max.row; row++) {
+		for (int col = 0; col < hex_max.col; col++) {
 
 			const int color_idx = hex_bg_color_idx(row, col);
 
@@ -131,10 +204,6 @@ int main() {
 			print_hex(row, col, L' ', color_pair);
 		}
 	}
-
-	s_point hex_idx, hex_idx_old;
-
-	s_point_set(&hex_idx_old, -1, -1);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -153,28 +222,40 @@ int main() {
 				log_exit_str("Unable to get mouse event!");
 			}
 
-			get_hex_idx(event.y, event.x, &hex_idx);
+			get_hex_idx(event.y, event.x, &hex_idx, &hex_max);
 
 			if (!s_point_same(&hex_idx, &hex_idx_old)) {
 				short color_pair;
 
 				const int color_idx = hex_bg_color_idx(hex_idx_old.row, hex_idx_old.col);
 
-				color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
+				//
+				// Delete old
+				//
+				if (hex_idx_old.row >= 0 && hex_idx_old.col >= 0) {
 
-				print_hex(hex_idx_old.row, hex_idx_old.col, L' ', color_pair);
+					color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
 
-				color_pair = cp_color_pair_get(COLOR_WHITE, COLOR_RED);
+					print_hex(hex_idx_old.row, hex_idx_old.col, L' ', color_pair);
+				}
 
-				print_hex(hex_idx.row, hex_idx.col, L' ', color_pair);
+				//
+				// Print new
+				//
+				if (hex_idx.row >= 0 && hex_idx.col >= 0) {
+
+					color_pair = cp_color_pair_get(COLOR_WHITE, COLOR_RED);
+
+					print_hex(hex_idx.row, hex_idx.col, L' ', color_pair);
+				}
 
 				s_point_copy(&hex_idx_old, &hex_idx);
 			}
 		}
 	}
 
-//
-// Cleanup is handled with the exit callback.
-//
+	//
+	// Cleanup is handled with the exit callback.
+	//
 	return EXIT_SUCCESS;
 }
