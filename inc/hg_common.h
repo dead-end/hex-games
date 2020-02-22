@@ -59,6 +59,28 @@
 #define log_exit(fmt, ...) fprintf(stderr, "FATAL %s:%d:%s() " fmt "\n", __FILE__, __LINE__, __func__, ##__VA_ARGS__); exit(EXIT_FAILURE)
 #define log_exit_str(fmt)  fprintf(stderr, "FATAL %s:%d:%s() " fmt "\n", __FILE__, __LINE__, __func__); exit(EXIT_FAILURE)
 
+/******************************************************************************
+ * The s_point struct represents an element that has a row and a column. This
+ * can be a pixel (terminal character), an array dimension, a block size...
+ *****************************************************************************/
+
+typedef struct s_point {
+
+	int row;
+
+	int col;
+
+} s_point;
+
+//
+// The macro sets the row and column of a s_point struct.
+//
+#define s_point_set(p,r,c) (p)->row = (r);(p)->col = (c)
+
+#define s_point_copy(t,f) (t)->row = (f)->row; (t)->col = (f)->col
+
+#define s_point_same(t,f) (((t)->row == (f)->row) && ((t)->col == (f)->col))
+
 void* xmalloc(const size_t size);
 
 #endif /* INC_HG_COMMON_H_ */
