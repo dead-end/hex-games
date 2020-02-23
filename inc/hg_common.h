@@ -81,6 +81,13 @@ typedef struct s_point {
 
 #define s_point_same(t,f) (((t)->row == (f)->row) && ((t)->col == (f)->col))
 
+// TODO:
+#define W_EMPTY L' '
+
+#define W_STAR L'.'
+
+#define W_NULL L'\0'
+
 void* xmalloc(const size_t size);
 
 #endif /* INC_HG_COMMON_H_ */
