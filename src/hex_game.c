@@ -34,6 +34,13 @@
 
 #include "hg_hex.h"
 
+//
+// Hex mask TODO: remove
+//
+const char hex_mask[HEX_SIZE][HEX_SIZE] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 } };
+
+#define hex_is_hex(r,c) (hex_mask[r][c] != 0)
+
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
@@ -80,91 +87,6 @@ void print_hex(const int hex_idx_row, const int hex_idx_col, const chtype ch, co
 			}
 		}
 	}
-}
-
-/******************************************************************************
- * The function computes the hex index from a mouse event, which is the
- * position of the cursor.
- *
- * To compute the index, the columns are split into blocks of 3 columns. There
- * are two cases which are handled separately:
- *
- * - the left column of the block
- * - the center and right column of the block
- *
- * Three hex fields:
- *
- *  ##    ##
- * ####  ####
- * ####OO####
- *  ##OOOO##
- *    OOOO
- *     OO
- *
- * The three hex fields spited into blocks of three columns. The last block is
- * not complete.
- *
- *  ##        ##
- * ###  #    ###  #
- * ###  #OO  ###  #
- *  ##  OOO  O##
- *      OOO  O
- *       OO
- *****************************************************************************/
-
-void get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max) {
-
-	const int col_3_idx = win_col / 3;
-
-	//
-	// Handle the left column of the block
-	//
-	if (win_col % 3 == 0) {
-		const int win_row_offset = win_row - 1;
-
-		if (win_row_offset < 0) {
-			s_point_set(hex_idx, -1, -1);
-
-		} else {
-			hex_idx->col = col_3_idx - ((win_row_offset / 2 + col_3_idx) % 2);
-
-			if (hex_idx->col < 0) {
-				s_point_set(hex_idx, -1, -1);
-
-			} else {
-				hex_idx->row = win_row_offset / 4;
-			}
-		}
-
-	}
-
-	//
-	// Handle the center and right column of the block.
-	//
-	else {
-
-		//
-		// The rows have toggling offset of 0 and 2.
-		//
-		const int win_row_offset = win_row - ((col_3_idx % 2 == 1) ? 2 : 0);
-
-		if (win_row_offset < 0) {
-			s_point_set(hex_idx, -1, -1);
-
-		} else {
-			hex_idx->row = win_row_offset / 4;
-			hex_idx->col = col_3_idx;
-		}
-	}
-
-	//
-	// Ensure that the hex index is inside the valid ranges.
-	//
-	if (hex_idx->row >= hex_max->row || hex_idx->col >= hex_max->col) {
-		s_point_set(hex_idx, -1, -1);
-	}
-
-	log_debug("Event - row %d col: %d hex - row: %d col: %d", win_row, win_col, hex_idx->row, hex_idx->col);
 }
 
 /******************************************************************************
@@ -222,7 +144,7 @@ int main() {
 				log_exit_str("Unable to get mouse event!");
 			}
 
-			get_hex_idx(event.y, event.x, &hex_idx, &hex_max);
+			hex_get_hex_idx(event.y, event.x, &hex_idx, &hex_max);
 
 			if (!s_point_same(&hex_idx, &hex_idx_old)) {
 				short color_pair;
