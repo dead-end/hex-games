@@ -25,16 +25,16 @@
 #ifndef INC_HG_HEX_H_
 #define INC_HG_HEX_H_
 
+#include "hg_common.h"
+
 #define HEX_SIZE 4
-
-const char hex_mask[HEX_SIZE][HEX_SIZE] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 } };
-
-#define hex_is_hex(r,c) (hex_mask[r][c] != 0)
 
 #define hex_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
 
 #define hex_start_row(r,c) (((c) % 2) * 2 + (r) * 4)
 
 #define hex_start_col(r,c) ((c) * 3)
+
+void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max);
 
 #endif /* INC_HG_HEX_H_ */
