@@ -29,11 +29,35 @@
 
 #define HEX_SIZE 4
 
-#define hex_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
+/******************************************************************************
+ * The struct for a hex point, which consists of a character and a foreground
+ * color. The background color is defined by the space field state.
+ *****************************************************************************/
 
+typedef struct s_hex_point {
+
+	wchar_t chr;
+
+	short fg;
+
+} s_hex_point;
+
+/******************************************************************************
+ * The macro definitions.
+ *****************************************************************************/
+
+// TODO: other name ???
 #define hex_start_row(r,c) (((c) % 2) * 2 + (r) * 4)
 
 #define hex_start_col(r,c) ((c) * 3)
+
+/******************************************************************************
+ * The function definitions.
+ *****************************************************************************/
+
+s_hex_point** hex_field_alloc();
+
+void hex_field_free(s_hex_point **hex_field);
 
 void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max);
 
