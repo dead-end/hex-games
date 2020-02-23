@@ -57,6 +57,8 @@ SRC_LIBS = \
 	$(SRC_DIR)/hg_color.c \
 	$(SRC_DIR)/hg_color_pair.c \
 	$(SRC_DIR)/hg_hex.c \
+	$(SRC_DIR)/ut_utils.c \
+	$(SRC_DIR)/ut_hex.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 
@@ -68,9 +70,19 @@ INC_LIBS = $(subst $(SRC_DIR),$(INCLUDE_DIR),$(subst .c,.h,$(SRC_LIBS)))
 
 EXEC     = hex_game
 
-SRC_EXEC = $(SRC_DIR)/hex_game.c
+SRC_EXEC = $(SRC_DIR)/$(EXEC).c
 
-OBJ_EXEC = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_EXEC)))
+OBJ_EXEC = $(BUILD_DIR)/$(EXEC).o
+
+################################################################################
+# The test program.
+################################################################################
+
+UNIT_TEST     = ut_test
+
+SRC_UNIT_TEST = $(SRC_DIR)/$(UNIT_TEST).c
+
+OBJ_UNIT_TEST = $(BUILD_DIR)/$(UNIT_TEST).o
 
 ################################################################################
 # Definition of the top-level targets. 
@@ -81,7 +93,16 @@ OBJ_EXEC = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_EXEC)))
 
 .PHONY: all
 
-all: $(EXEC)
+all: $(EXEC) tests
+
+################################################################################
+# Execute the tests.
+################################################################################
+
+.PHONY: tests
+
+tests: $(UNIT_TEST)
+	 ./$(UNIT_TEST)
 
 ################################################################################
 # A static pattern, that builds an object file from its source. The automatic
@@ -105,6 +126,9 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(INC_LIBS)
 
 $(EXEC): $(OBJ_LIBS) $(OBJ_EXEC)
 	$(CC) -o $@ $^ $(FLAGS) $(LIBS)
+	
+$(UNIT_TEST): $(OBJ_LIBS) $(OBJ_UNIT_TEST)
+	$(CC) -o $@ $^ $(FLAGS) $(LIBS)
 
 ################################################################################
 # The cleanup goal deletes the executable, the test programs, all object files
@@ -117,7 +141,7 @@ clean:
 	rm -f $(BUILD_DIR)/*.o
 	rm -f $(SRC_DIR)/*.c~
 	rm -f $(INCLUDE_DIR)/*.h~
-	rm -f $(EXEC)
+	rm -f $(EXEC) $(UNIT_TEST)
 	
 ################################################################################
 # Goals to install and uninstall the executable.
