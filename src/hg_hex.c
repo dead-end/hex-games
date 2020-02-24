@@ -26,7 +26,7 @@
 #include "hg_hex.h"
 
 /******************************************************************************
- * The function allocates a 4 x 4 array of s_hex_point, which represents a hex
+ * The function allocates a 4x4 array of s_hex_point, which represents a hex
  * field.
  *****************************************************************************/
 
