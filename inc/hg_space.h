@@ -28,19 +28,25 @@
 #include "hg_common.h"
 
 /******************************************************************************
- * The macro definitions.
+ *
  *****************************************************************************/
 
-#define space_get_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
+typedef enum e_state {
+
+	STATE_NORMAL = 0, STATE_SELECT = 1
+
+} e_state;
 
 /******************************************************************************
  * The function definitions.
  *****************************************************************************/
 
-void space_init(const s_point *dim);
+void space_init(s_point *dim_hex);
 
 void space_free();
 
 s_hex_point** space_get_hex_field(const s_point *hex);
+
+short space_get_color(const int row, const int col, const e_state state);
 
 #endif /* INC_HG_SPACE_H_ */

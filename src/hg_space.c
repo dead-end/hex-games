@@ -26,6 +26,9 @@
 
 #include "hg_common.h"
 #include "hg_hex.h"
+#include "hg_color.h"
+#include "hg_color_pair.h"
+#include "hg_space.h"
 
 //
 // On average 1 of RAND_START chars is a star.
@@ -35,6 +38,64 @@
 static s_hex_point ****__space;
 
 static s_point __dim_space;
+
+short colors_normal[3];
+short colors_select[3];
+
+/******************************************************************************
+ * The function initializes the colors.
+ *****************************************************************************/
+
+static void space_init_colors() {
+
+	colors_normal[0] = col_color_create(50, 50, 50);
+	colors_normal[1] = col_color_create(80, 80, 80);
+	colors_normal[2] = col_color_create(110, 110, 110);
+
+	colors_select[0] = col_color_create(150, 50, 50);
+	colors_select[1] = col_color_create(180, 80, 80);
+	colors_select[2] = col_color_create(210, 110, 110);
+
+	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
+	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
+	cp_color_pair_add(COLOR_WHITE, colors_normal[2]);
+
+	cp_color_pair_add(COLOR_WHITE, colors_select[0]);
+	cp_color_pair_add(COLOR_WHITE, colors_select[1]);
+	cp_color_pair_add(COLOR_WHITE, colors_select[2]);
+
+	cp_color_pair_sort();
+}
+
+/******************************************************************************
+ * The macro definitions.
+ *****************************************************************************/
+
+#define space_get_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+short space_get_color(const int row, const int col, const e_state state) {
+	short result;
+
+	const int idx = space_get_bg_color_idx(row, col);
+
+	if (state == STATE_NORMAL) {
+		result = colors_normal[idx];
+
+	} else if (state == STATE_SELECT) {
+		result = colors_select[idx];
+
+	} else {
+		log_exit("Unknown state: %d", state);
+	}
+
+	log_debug("state: %d pos: %d/%d idx: %d result: %d", state, row, col, idx, result);
+
+	return result;
+}
 
 /******************************************************************************
  * The function allocates the array for the space field.
@@ -164,6 +225,11 @@ void space_init(s_point *dim_hex) {
 	// Create stars
 	//
 	space_init_hex_fields(__space, dim_hex);
+
+	//
+	// Initialize the colors
+	//
+	space_init_colors();
 }
 
 /******************************************************************************
