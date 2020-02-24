@@ -52,9 +52,9 @@ static void space_init_colors() {
 	colors_normal[1] = col_color_create(80, 80, 80);
 	colors_normal[2] = col_color_create(110, 110, 110);
 
-	colors_select[0] = col_color_create(150, 50, 50);
-	colors_select[1] = col_color_create(180, 80, 80);
-	colors_select[2] = col_color_create(210, 110, 110);
+	colors_select[0] = col_color_create(250, 150, 150);
+	colors_select[1] = col_color_create(280, 180, 180);
+	colors_select[2] = col_color_create(310, 210, 210);
 
 	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
 	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
