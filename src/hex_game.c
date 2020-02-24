@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+#include <time.h>
 #include <stdlib.h>
 #include <locale.h>
 #include <ncurses.h>
@@ -34,12 +35,7 @@
 
 #include "hg_hex.h"
 
-//
-// Hex mask TODO: remove
-//
-const char hex_mask[HEX_SIZE][HEX_SIZE] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1, 1, 1, 1 }, { 0, 1, 1, 0 } };
-
-#define hex_is_hex(r,c) (hex_mask[r][c] != 0)
+#include "hg_space.h"
 
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
@@ -49,6 +45,8 @@ const char hex_mask[HEX_SIZE][HEX_SIZE] = { { 0, 1, 1, 0 }, { 1, 1, 1, 1 }, { 1,
 static void hg_exit_callback() {
 
 	ncur_exit();
+
+	space_free();
 
 	log_debug_str("Exit callback finished!");
 }
@@ -69,22 +67,59 @@ static void hg_init() {
 	if (on_exit(hg_exit_callback, NULL) != 0) {
 		log_exit_str("Unable to register exit function!");
 	}
+
+	//
+	// Initializes random number generator. The function does not return a
+	// value.
+	//
+	time_t t;
+	srand((unsigned) time(&t));
 }
 
-void print_hex(const int hex_idx_row, const int hex_idx_col, const chtype ch, const short color_pair) {
+/******************************************************************************
+ *
+ *****************************************************************************/
 
-	const int start_row = hex_start_row(hex_idx_row, hex_idx_col);
-	const int start_col = hex_start_col(hex_idx_row, hex_idx_col);
+void print_hex_field(const s_point *hex, const short color_pair) {
+
+	const int start_row = hex_start_row(hex->row, hex->col);
+	const int start_col = hex_start_col(hex->row, hex->col);
+
+	s_hex_point **hex_field = space_get_hex_field(hex);
 
 	for (int row = 0; row < HEX_SIZE; row++) {
 		for (int col = 0; col < HEX_SIZE; col++) {
 
-			if (hex_is_hex(row, col)) {
-
-				attron(COLOR_PAIR(color_pair));
-
-				mvaddch(start_row + row, start_col + col, ch);
+			//
+			// Ignore the corners of the hex field
+			//
+			// TODO: maybe a macro
+			if (hex_field[row][col].chr == W_NULL) {
+				continue;
 			}
+
+			attron(COLOR_PAIR(color_pair));
+
+			mvaddch(start_row + row, start_col + col, hex_field[row][col].chr);
+		}
+	}
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+void print_hex_fields(const s_point *hex_max) {
+	s_point hex_idx;
+
+	for (hex_idx.row = 0; hex_idx.row < hex_max->row; hex_idx.row++) {
+		for (hex_idx.col = 0; hex_idx.col < hex_max->col; hex_idx.col++) {
+
+			const short bg_color = space_get_color(hex_idx.row, hex_idx.col, STATE_NORMAL);
+
+			const short color_pair = cp_color_pair_get(COLOR_WHITE, bg_color);
+
+			print_hex_field(&hex_idx, color_pair);
 		}
 	}
 }
@@ -99,33 +134,13 @@ int main() {
 
 	s_point_set(&hex_idx_old, -1, -1);
 
-	s_point_set(&hex_max, 3, 12);
+	s_point_set(&hex_max, 5, 12);
 
 	hg_init();
 
-	short colors[3];
-	colors[0] = col_color_create(600, 600, 600);
-	colors[1] = col_color_create(700, 700, 700);
-	colors[2] = col_color_create(800, 800, 800);
+	space_init(&hex_max);
 
-	cp_color_pair_add(COLOR_WHITE, colors[0]);
-	cp_color_pair_add(COLOR_WHITE, colors[1]);
-	cp_color_pair_add(COLOR_WHITE, colors[2]);
-
-	cp_color_pair_add(COLOR_WHITE, COLOR_RED);
-
-	cp_color_pair_sort();
-
-	for (int row = 0; row < hex_max.row; row++) {
-		for (int col = 0; col < hex_max.col; col++) {
-
-			const int color_idx = hex_bg_color_idx(row, col);
-
-			const short color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
-
-			print_hex(row, col, L' ', color_pair);
-		}
-	}
+	print_hex_fields(&hex_max);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -149,16 +164,16 @@ int main() {
 			if (!s_point_same(&hex_idx, &hex_idx_old)) {
 				short color_pair;
 
-				const int color_idx = hex_bg_color_idx(hex_idx_old.row, hex_idx_old.col);
-
 				//
 				// Delete old
 				//
 				if (hex_idx_old.row >= 0 && hex_idx_old.col >= 0) {
 
-					color_pair = cp_color_pair_get(COLOR_WHITE, colors[color_idx]);
+					const short bg_color = space_get_color(hex_idx_old.row, hex_idx_old.col, STATE_NORMAL);
 
-					print_hex(hex_idx_old.row, hex_idx_old.col, L' ', color_pair);
+					color_pair = cp_color_pair_get(COLOR_WHITE, bg_color);
+
+					print_hex_field(&hex_idx_old, color_pair);
 				}
 
 				//
@@ -166,9 +181,11 @@ int main() {
 				//
 				if (hex_idx.row >= 0 && hex_idx.col >= 0) {
 
-					color_pair = cp_color_pair_get(COLOR_WHITE, COLOR_RED);
+					const short bg_color = space_get_color(hex_idx.row, hex_idx.col, STATE_SELECT);
 
-					print_hex(hex_idx.row, hex_idx.col, L' ', color_pair);
+					color_pair = cp_color_pair_get(COLOR_WHITE, bg_color);
+
+					print_hex_field(&hex_idx, color_pair);
 				}
 
 				s_point_copy(&hex_idx_old, &hex_idx);
