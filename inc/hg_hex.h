@@ -30,8 +30,8 @@
 #define HEX_SIZE 4
 
 /******************************************************************************
- * The struct for a hex point, which consists of a character and a foreground
- * color. The background color is defined by the space field state.
+ * The struct for a hex point, which consists of a (foreground) character and a
+ * foreground color. The background color is defined by the space field state.
  *****************************************************************************/
 
 typedef struct s_hex_point {
@@ -46,10 +46,11 @@ typedef struct s_hex_point {
  * The macro definitions.
  *****************************************************************************/
 
-// TODO: other name ???
-#define hex_start_row(r,c) (((c) % 2) * 2 + (r) * 4)
+#define hex_field_ul_row(r,c) (((c) % 2) * 2 + (r) * 4)
 
-#define hex_start_col(r,c) ((c) * 3)
+#define hex_field_ul_col(r,c) ((c) * 3)
+
+#define hex_field_point_is_corner(h) ((h.chr) == W_NULL)
 
 /******************************************************************************
  * The function definitions.
