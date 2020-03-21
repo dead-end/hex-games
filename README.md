@@ -36,3 +36,5 @@ tell adjacent hex fields with the same color. One solution is to use different
 colors for adjacent hex fields.
 
 ![Hex fields with 3 colors](res/hex-fields-3-colors.png)
+
+![Current state](res/current-state.gif)
