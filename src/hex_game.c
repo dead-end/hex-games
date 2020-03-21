@@ -123,6 +123,92 @@ void print_hex_fields(const s_point *hex_dim) {
 	}
 }
 
+#define Q_LRLR L"\x2588"
+
+#define Q_XRLR L"\x259F"
+#define Q_LXLR L"\x2599"
+
+#define Q_LRLX L"\x259B"
+#define Q_LRXR L"\x259C"
+
+short ship_color_blue1;
+short ship_color_blue2;
+short ship_color_yellow;
+
+void ship_init() {
+
+	ship_color_blue1 = col_color_create(300, 300, 700);
+	ship_color_blue2 = col_color_create(380, 380, 700);
+
+	ship_color_yellow = col_color_create(900, 800, 0);
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+void ship_print(const s_point *hex_idx, const int dir) {
+
+	const short bg_color = space_get_color(hex_idx->row, hex_idx->col, STATE_NORMAL);
+
+	const short cp_bgd_blue1 = cp_color_pair_get(ship_color_blue1, bg_color);
+	const short cp_bgd_blue2 = cp_color_pair_get(ship_color_blue2, bg_color);
+
+	const short cp_blue1_blue2 = cp_color_pair_get(ship_color_blue1, ship_color_blue2);
+
+	const short cp_blu_yell1 = cp_color_pair_get(ship_color_blue1, ship_color_yellow);
+	const short cp_blu_yell2 = cp_color_pair_get(ship_color_blue2, ship_color_yellow);
+	const short cp_bgd_yell = cp_color_pair_get(ship_color_yellow, bg_color);
+
+	const int ul_row = hex_field_ul_row(hex_idx->row, hex_idx->col);
+	const int ul_col = hex_field_ul_col(hex_idx->row, hex_idx->col);
+
+	//
+	// Ship
+	//
+
+	if (dir == 0) {
+
+		attron(COLOR_PAIR(cp_bgd_blue1));
+		mvaddwstr(ul_row + 0, ul_col + 1, Q_XRLR);
+		mvaddwstr(ul_row + 1, ul_col + 0, Q_XRLR);
+		mvaddwstr(ul_row + 1, ul_col + 1, Q_LRLR);
+
+		attron(COLOR_PAIR(cp_bgd_blue2));
+		mvaddwstr(ul_row + 0, ul_col + 2, Q_LXLR);
+		mvaddwstr(ul_row + 1, ul_col + 2, Q_LRLR);
+		mvaddwstr(ul_row + 1, ul_col + 3, Q_LXLR);
+
+		attron(COLOR_PAIR(cp_blu_yell1));
+		mvaddwstr(ul_row + 2, ul_col + 0, Q_LRLX);
+		mvaddwstr(ul_row + 2, ul_col + 1, Q_LRXR);
+
+		attron(COLOR_PAIR(cp_blu_yell2));
+		mvaddwstr(ul_row + 2, ul_col + 2, Q_LRLX);
+		mvaddwstr(ul_row + 2, ul_col + 3, Q_LRXR);
+
+	} else if (dir == 1) {
+		attron(COLOR_PAIR(cp_bgd_blue1));
+		mvaddwstr(ul_row + 1, ul_col + 0, Q_XRLR);
+		mvaddwstr(ul_row + 1, ul_col + 1, Q_LRLR);
+
+		attron(COLOR_PAIR(cp_bgd_yell));
+		mvaddwstr(ul_row + 2, ul_col + 0, Q_LRXR);
+		mvaddwstr(ul_row + 3, ul_col + 1, Q_LRXR);
+
+		attron(COLOR_PAIR(cp_blue1_blue2));
+		mvaddwstr(ul_row + 1, ul_col + 2, Q_LRLX);
+		mvaddwstr(ul_row + 2, ul_col + 1, Q_LRLX);
+
+		attron(COLOR_PAIR(cp_bgd_blue2));
+		mvaddwstr(ul_row + 2, ul_col + 2, Q_LRLR);
+		mvaddwstr(ul_row + 3, ul_col + 2, Q_LRLX);
+
+	} else {
+		log_exit("Unknown dir: %d", dir);
+	}
+}
+
 /******************************************************************************
  * Main
  *****************************************************************************/
@@ -140,6 +226,16 @@ int main() {
 	space_init(&hex_max);
 
 	print_hex_fields(&hex_max);
+
+	s_point hex_idx_tmp;
+
+	ship_init();
+
+	s_point_set(&hex_idx_tmp, 1, 1);
+	ship_print(&hex_idx_tmp, 0);
+
+	s_point_set(&hex_idx_tmp, 3, 3);
+	ship_print(&hex_idx_tmp, 1);
 
 	for (;;) {
 		int c = wgetch(stdscr);
