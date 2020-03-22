@@ -36,7 +36,7 @@ s_hex_point** hex_field_alloc() {
 	hex_field = xmalloc(sizeof(s_hex_point*) * HEX_SIZE);
 
 	for (int row = 0; row < HEX_SIZE; row++) {
-		hex_field[row] = xmalloc(sizeof(hex_field) * HEX_SIZE);
+		hex_field[row] = xmalloc(sizeof(s_hex_point) * HEX_SIZE);
 	}
 
 	return hex_field;
