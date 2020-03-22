@@ -241,17 +241,15 @@ typedef enum dir {
 void ship_field_corners(s_hex_point **ship_field) {
 	log_debug_str("Setting corners!");
 
-	hex_point_set(ship_field[0][0], W_NULL, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship_field[0][3], W_NULL, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship_field[3][0], W_NULL, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship_field[3][3], W_NULL, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship_field[0][0]);
+	hex_point_set_undef(ship_field[0][3]);
+	hex_point_set_undef(ship_field[3][0]);
+	hex_point_set_undef(ship_field[3][3]);
 }
 
 /******************************************************************************
  *
  *****************************************************************************/
-
-#define hex_point_set_undef(h) (h).chr = NULL; (h).fg = COLOR_UNDEF; (h).bg = COLOR_UNDEF
 
 void ship_field_init() {
 	log_debug_str("Init ships!");
