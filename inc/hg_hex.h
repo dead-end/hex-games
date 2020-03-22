@@ -31,14 +31,16 @@
 
 /******************************************************************************
  * The struct for a hex point, which consists of a (foreground) character and a
- * foreground color. The background color is defined by the space field state.
+ * foreground and background color.
  *****************************************************************************/
 
 typedef struct s_hex_point {
 
-	wchar_t chr;
+	wchar_t *chr;
 
 	short fg;
+
+	short bg;
 
 } s_hex_point;
 
