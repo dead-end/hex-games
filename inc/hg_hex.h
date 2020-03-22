@@ -52,7 +52,7 @@ typedef struct s_hex_point {
 
 #define hex_field_ul_col(r,c) ((c) * 3)
 
-#define hex_field_point_is_corner(h) ((h.chr) == W_NULL)
+#define hex_field_is_corner(r,c) ((r) % 3 == 0 && (c) % 3 == 0)
 
 /******************************************************************************
  * The function definitions.
