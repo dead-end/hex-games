@@ -47,6 +47,7 @@ short colors_select[3];
  *****************************************************************************/
 
 static void space_init_colors() {
+	log_debug_str("Init the space colors and color pairs!");
 
 	colors_normal[0] = col_color_create(50, 50, 50);
 	colors_normal[1] = col_color_create(80, 80, 80);
@@ -159,11 +160,16 @@ static void space_init_hex_field(s_hex_point **hex_block) {
 		for (int col = 0; col < HEX_SIZE; col++) {
 
 			//
+			// The background color is defined by the state of the hex field.
+			//
+			hex_block[row][col].bg = COLOR_UNDEF;
+
+			//
 			// The 4 corners of the array are not necessary for the hex field.
 			//
 			if (row % 3 == 0 && col % 3 == 0) {
 				hex_block[row][col].chr = W_NULL;
-				hex_block[row][col].fg = -1;
+				hex_block[row][col].fg = COLOR_UNDEF;
 			}
 
 			//
