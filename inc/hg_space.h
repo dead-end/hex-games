@@ -37,6 +37,8 @@ typedef enum e_state {
 
 } e_state;
 
+#define space_get_color_pair(bg) cp_color_pair_get(COLOR_WHITE, (bg))
+
 /******************************************************************************
  * The function definitions.
  *****************************************************************************/
