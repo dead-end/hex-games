@@ -25,6 +25,8 @@
 #ifndef INC_HG_COLOR_H_
 #define INC_HG_COLOR_H_
 
+#define COLOR_UNDEF -1
+
 short col_color_create(const short r, const short g, const short b);
 
 #endif /* INC_HG_COLOR_H_ */
