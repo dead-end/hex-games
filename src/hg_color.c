@@ -74,7 +74,7 @@ static s_color _color_array[_COLOR_MAX];
 
 #ifdef DEBUG
 
-int col_color_comp(const void *ptr1, const void *ptr2) {
+static int col_color_comp(const void *ptr1, const void *ptr2) {
 
 	const s_color *color1 = (s_color*) ptr1;
 	const s_color *color2 = (s_color*) ptr2;
