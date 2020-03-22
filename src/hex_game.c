@@ -116,6 +116,10 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 	}
 }
 
+/******************************************************************************
+ * The definition of the ship templates.
+ *****************************************************************************/
+
 #define DIR_NUM 6
 
 s_hex_point **ship_field[DIR_NUM];
@@ -188,7 +192,7 @@ static void hg_init() {
 // ----------------------------------------------------------------------------
 
 /******************************************************************************
- *
+ * The function prints the space hex fields of the game.
  *****************************************************************************/
 
 void print_hex_fields(const s_point *hex_dim) {
@@ -223,7 +227,7 @@ short blue_light;
 short yellow;
 
 /******************************************************************************
- *
+ * The definition of the 6 directions of a hex field.
  *****************************************************************************/
 
 typedef enum dir {
@@ -246,6 +250,8 @@ void ship_field_corners(s_hex_point **ship_field) {
 /******************************************************************************
  *
  *****************************************************************************/
+
+#define hex_point_set_undef(h) (h).chr = NULL; (h).fg = COLOR_UNDEF; (h).bg = COLOR_UNDEF
 
 void ship_field_init() {
 	log_debug_str("Init ships!");
@@ -276,15 +282,15 @@ void ship_field_init() {
 	hex_point_set(ship[2][2], Q_LRLX, blue_light, yellow);
 	hex_point_set(ship[2][3], Q_LRXR, blue_light, yellow);
 
-	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[3][1]);
+	hex_point_set_undef(ship[3][2]);
 
 	// Direction NN
 	ship = ship_field[DIR_NE];
 	ship_field_corners(ship);
 
-	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[0][1]);
+	hex_point_set_undef(ship[0][2]);
 
 	hex_point_set(ship[1][0], Q_XRLR, blue_dark, COLOR_UNDEF);
 	hex_point_set(ship[1][1], Q_LRLR, blue_dark, COLOR_UNDEF);
@@ -316,15 +322,15 @@ void ship_field_init() {
 	hex_point_set(ship[2][2], Q_LXLR, blue_dark, blue_light);
 	hex_point_set(ship[2][3], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
 
-	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[3][1]);
+	hex_point_set_undef(ship[3][2]);
 
 	// Direction SS
 	ship = ship_field[DIR_SS];
 	ship_field_corners(ship);
 
-	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[0][1]);
+	hex_point_set_undef(ship[0][2]);
 
 	hex_point_set(ship[1][0], Q_LXLR, blue_dark, yellow);
 	hex_point_set(ship[1][1], Q_XRLR, blue_dark, yellow);
@@ -356,15 +362,15 @@ void ship_field_init() {
 	hex_point_set(ship[2][2], Q_LRLR, blue_light, COLOR_UNDEF);
 	hex_point_set(ship[2][3], Q_LRLX, blue_light, COLOR_UNDEF);
 
-	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[3][1]);
+	hex_point_set_undef(ship[3][2]);
 
 	// Direction NN
 	ship = ship_field[DIR_NW];
 	ship_field_corners(ship);
 
-	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
-	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set_undef(ship[0][1]);
+	hex_point_set_undef(ship[0][2]);
 
 	hex_point_set(ship[1][0], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
 	hex_point_set(ship[1][1], Q_LRXR, blue_light, blue_dark);
