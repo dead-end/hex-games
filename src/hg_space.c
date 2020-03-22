@@ -167,7 +167,7 @@ static void space_init_hex_field(s_hex_point **hex_block) {
 			//
 			// The 4 corners of the array are not necessary for the hex field.
 			//
-			if (row % 3 == 0 && col % 3 == 0) {
+			if (hex_field_is_corner(row, col)) {
 				hex_block[row][col].chr = W_NULL;
 				hex_block[row][col].fg = COLOR_UNDEF;
 			}
