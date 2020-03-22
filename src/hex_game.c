@@ -37,6 +37,9 @@
 
 #include "hg_space.h"
 
+// TODO: delete
+void ship_field_free();
+
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
@@ -45,6 +48,8 @@
 static void hg_exit_callback() {
 
 	ncur_exit();
+
+	ship_field_free();
 
 	space_free();
 
@@ -97,22 +102,26 @@ void print_hex_field(const s_point *hex_idx, const e_state state) {
 			//
 			// Ignore the corners of the hex field
 			//
-			if (hex_field_point_is_corner(hex_field[row][col])) {
+			if (hex_field_is_corner(row, col)) {
 				continue;
 			}
 
 			attron(COLOR_PAIR(color_pair));
 
-			mvaddch(hex_ul_row + row, hex_ul_col + col, hex_field[row][col].chr);
+			mvaddwstr(hex_ul_row + row, hex_ul_col + col, hex_field[row][col].chr);
 		}
 	}
 }
+
+// ----------------------------------------------------------------------------
 
 /******************************************************************************
  *
  *****************************************************************************/
 
 void print_hex_fields(const s_point *hex_dim) {
+	log_debug_str("Print hex fields");
+
 	s_point hex_idx;
 
 	for (hex_idx.row = 0; hex_idx.row < hex_dim->row; hex_idx.row++) {
@@ -122,6 +131,8 @@ void print_hex_fields(const s_point *hex_dim) {
 		}
 	}
 }
+
+#define Q_UDEF NULL
 
 #define Q_LRLR L"\x2588"
 
@@ -135,77 +146,248 @@ short ship_color_blue1;
 short ship_color_blue2;
 short ship_color_yellow;
 
-void ship_init() {
+#define DIR_NUM 6
+
+typedef enum dir {
+	DIR_NN, DIR_NE, DIR_SE, DIR_SS, DIR_SW, DIR_NW
+} e_dir;
+
+s_hex_point **ship_field[6];
+
+#define C_UDEF L'\0'
+//#define C_LRLR L'\u2588'
+#define C_LRLR 0x2588
+#define C_XRLR L'\u259F'
+#define C_LXLR L'\u2599'
+#define C_LRLX L'\u259B'
+#define C_LRXR L'\u259C'
+
+void ship_field_corners(s_hex_point **ship_field) {
+	log_debug_str("Setting corners!");
+
+	hex_point_set(ship_field[0][0], C_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship_field[0][3], C_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship_field[3][0], C_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship_field[3][3], C_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+}
+
+void ship_field_init() {
+	log_debug_str("Init ships!");
 
 	ship_color_blue1 = col_color_create(300, 300, 700);
-	ship_color_blue2 = col_color_create(380, 380, 700);
+	ship_color_blue2 = col_color_create(400, 400, 700);
 
 	ship_color_yellow = col_color_create(900, 800, 0);
+
+	for (int i = 0; i < DIR_NUM; i++) {
+		ship_field[i] = hex_field_alloc();
+	}
+
+	s_hex_point **ship;
+
+	// Direction NN
+	ship = ship_field[DIR_NN];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_XRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_LXLR, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_XRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[1][1], Q_LRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[1][2], Q_LRLR, ship_color_blue2, COLOR_UNDEF);
+	hex_point_set(ship[1][3], Q_LXLR, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[2][0], Q_LRLX, ship_color_blue1, ship_color_yellow);
+	hex_point_set(ship[2][1], Q_LRXR, ship_color_blue1, ship_color_yellow);
+	hex_point_set(ship[2][2], Q_LRLX, ship_color_blue2, ship_color_yellow);
+	hex_point_set(ship[2][3], Q_LRXR, ship_color_blue2, ship_color_yellow);
+
+	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	// Direction NN
+	ship = ship_field[DIR_NE];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_XRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[1][1], Q_LRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[1][2], Q_LRLX, ship_color_blue1, ship_color_blue2);
+	hex_point_set(ship[1][3], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[2][0], Q_LRXR, ship_color_yellow, COLOR_UNDEF);
+	hex_point_set(ship[2][1], Q_LRLX, ship_color_blue1, ship_color_blue2);
+	hex_point_set(ship[2][2], Q_LRLR, ship_color_blue2, ship_color_blue1);
+	hex_point_set(ship[2][3], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[3][1], Q_LRXR, ship_color_yellow, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_LRLX, ship_color_blue2, COLOR_UNDEF);
+
+	// Direction NN
+	ship = ship_field[DIR_SE];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_XRLR, ship_color_yellow, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_LXLR, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_XRLR, ship_color_yellow, COLOR_UNDEF);
+	hex_point_set(ship[1][1], Q_LXLR, ship_color_blue1, ship_color_blue2);
+	hex_point_set(ship[1][2], Q_LRLR, ship_color_blue2, COLOR_UNDEF);
+	hex_point_set(ship[1][3], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[2][0], Q_LRXR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[2][1], Q_LRLR, ship_color_blue1, ship_color_blue2);
+	hex_point_set(ship[2][2], Q_LXLR, ship_color_blue1, ship_color_blue2);
+	hex_point_set(ship[2][3], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	// Direction SS
+	ship = ship_field[DIR_SS];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_LXLR, ship_color_blue1, ship_color_yellow);
+	hex_point_set(ship[1][1], Q_XRLR, ship_color_blue1, ship_color_yellow);
+	hex_point_set(ship[1][2], Q_LXLR, ship_color_blue2, ship_color_yellow);
+	hex_point_set(ship[1][3], Q_XRLR, ship_color_blue2, ship_color_yellow);
+
+	hex_point_set(ship[2][0], Q_LRXR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[2][1], Q_LRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[2][2], Q_LRLR, ship_color_blue2, COLOR_UNDEF);
+	hex_point_set(ship[2][3], Q_LRLX, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[3][1], Q_LRXR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_LRLX, ship_color_blue2, COLOR_UNDEF);
+
+	// Direction NN
+	ship = ship_field[DIR_SW];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_XRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_LXLR, ship_color_yellow, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[1][1], Q_LRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[1][2], Q_XRLR, ship_color_blue2, ship_color_blue1);
+	hex_point_set(ship[1][3], Q_LXLR, ship_color_yellow, COLOR_UNDEF);
+
+	hex_point_set(ship[2][0], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[2][1], Q_XRLR, ship_color_blue2, ship_color_blue1);
+	hex_point_set(ship[2][2], Q_LRLR, ship_color_blue2, COLOR_UNDEF);
+	hex_point_set(ship[2][3], Q_LRLX, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[3][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	// Direction NN
+	ship = ship_field[DIR_NW];
+	ship_field_corners(ship);
+
+	hex_point_set(ship[0][1], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[0][2], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+
+	hex_point_set(ship[1][0], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[1][1], Q_LRXR, ship_color_blue2, ship_color_blue1);
+	hex_point_set(ship[1][2], Q_LRLR, ship_color_blue2, COLOR_UNDEF);
+	hex_point_set(ship[1][3], Q_LXLR, ship_color_blue2, COLOR_UNDEF);
+
+	hex_point_set(ship[2][0], Q_UDEF, COLOR_UNDEF, COLOR_UNDEF);
+	hex_point_set(ship[2][1], Q_LRLR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[2][2], Q_LRXR, ship_color_blue2, ship_color_blue1);
+	hex_point_set(ship[2][3], Q_LRLX, ship_color_yellow, COLOR_UNDEF);
+
+	hex_point_set(ship[3][1], Q_LRXR, ship_color_blue1, COLOR_UNDEF);
+	hex_point_set(ship[3][2], Q_LRLX, ship_color_yellow, COLOR_UNDEF);
+
+	log_debug_str("Ships ready to fly!");
+}
+
+void ship_field_free() {
+
+	for (int i = 0; i < DIR_NUM; i++) {
+		free(ship_field[i]);
+	}
 }
 
 /******************************************************************************
- *
+ * The function prints a hex field. It is called with the state for the
+ * underlying hex field of the space.
  *****************************************************************************/
 
-void ship_print(const s_point *hex_idx, const int dir) {
+void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_field_fg, const e_state state) {
 
-	const short bg_color = space_get_color(hex_idx->row, hex_idx->col, STATE_NORMAL);
-
-	const short cp_bgd_blue1 = cp_color_pair_get(ship_color_blue1, bg_color);
-	const short cp_bgd_blue2 = cp_color_pair_get(ship_color_blue2, bg_color);
-
-	const short cp_blue1_blue2 = cp_color_pair_get(ship_color_blue1, ship_color_blue2);
-
-	const short cp_blu_yell1 = cp_color_pair_get(ship_color_blue1, ship_color_yellow);
-	const short cp_blu_yell2 = cp_color_pair_get(ship_color_blue2, ship_color_yellow);
-	const short cp_bgd_yell = cp_color_pair_get(ship_color_yellow, bg_color);
-
-	const int ul_row = hex_field_ul_row(hex_idx->row, hex_idx->col);
-	const int ul_col = hex_field_ul_col(hex_idx->row, hex_idx->col);
+	short color_pair;
+	short color_bg;
+	wchar_t *chr;
 
 	//
-	// Ship
+	// Get the background color of the space. This depends on the state of the
+	// hex field.
 	//
+	const short color_space_bg = space_get_color(hex_idx->row, hex_idx->col, state);
 
-	if (dir == 0) {
+	//
+	// Get the color pair for the space with the given background color. It is
+	// used if there is nothing in the forground.
+	//
+	const short color_pair_space = space_get_color_pair(color_space_bg);
 
-		attron(COLOR_PAIR(cp_bgd_blue1));
-		mvaddwstr(ul_row + 0, ul_col + 1, Q_XRLR);
-		mvaddwstr(ul_row + 1, ul_col + 0, Q_XRLR);
-		mvaddwstr(ul_row + 1, ul_col + 1, Q_LRLR);
+	//
+	// Get the upper left corner of the field.
+	//
+	const int hex_ul_row = hex_field_ul_row(hex_idx->row, hex_idx->col);
+	const int hex_ul_col = hex_field_ul_col(hex_idx->row, hex_idx->col);
 
-		attron(COLOR_PAIR(cp_bgd_blue2));
-		mvaddwstr(ul_row + 0, ul_col + 2, Q_LXLR);
-		mvaddwstr(ul_row + 1, ul_col + 2, Q_LRLR);
-		mvaddwstr(ul_row + 1, ul_col + 3, Q_LXLR);
+	//
+	// Get the hex field of the space.
+	//
+	s_hex_point **hex_field_space = space_get_hex_field(hex_idx);
 
-		attron(COLOR_PAIR(cp_blu_yell1));
-		mvaddwstr(ul_row + 2, ul_col + 0, Q_LRLX);
-		mvaddwstr(ul_row + 2, ul_col + 1, Q_LRXR);
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
 
-		attron(COLOR_PAIR(cp_blu_yell2));
-		mvaddwstr(ul_row + 2, ul_col + 2, Q_LRLX);
-		mvaddwstr(ul_row + 2, ul_col + 3, Q_LRXR);
+			//
+			// Ignore the corners of the hex field
+			//
+			if (hex_field_is_corner(row, col)) {
+				continue;
+			}
 
-	} else if (dir == 1) {
-		attron(COLOR_PAIR(cp_bgd_blue1));
-		mvaddwstr(ul_row + 1, ul_col + 0, Q_XRLR);
-		mvaddwstr(ul_row + 1, ul_col + 1, Q_LRLR);
+			//
+			// If the foreground hex field is undefined, we print the hex field
+			// of the space.
+			//
+			if (hex_field_fg[row][col].chr == Q_UDEF) {
+				chr = hex_field_space[row][col].chr;
+				color_pair = color_pair_space;
+			}
 
-		attron(COLOR_PAIR(cp_bgd_yell));
-		mvaddwstr(ul_row + 2, ul_col + 0, Q_LRXR);
-		mvaddwstr(ul_row + 3, ul_col + 1, Q_LRXR);
+			//
+			//
+			//
+			else {
+				chr = hex_field_fg[row][col].chr;
 
-		attron(COLOR_PAIR(cp_blue1_blue2));
-		mvaddwstr(ul_row + 1, ul_col + 2, Q_LRLX);
-		mvaddwstr(ul_row + 2, ul_col + 1, Q_LRLX);
+				//
+				// If the foreground hex field has a background color, we use
+				// this. Otherwise we used the background color of the sapce.
+				//
+				color_bg = hex_field_fg[row][col].bg == COLOR_UNDEF ? color_space_bg : hex_field_fg[row][col].bg;
+				color_pair = cp_color_pair_get(hex_field_fg[row][col].fg, color_bg);
+			}
 
-		attron(COLOR_PAIR(cp_bgd_blue2));
-		mvaddwstr(ul_row + 2, ul_col + 2, Q_LRLR);
-		mvaddwstr(ul_row + 3, ul_col + 2, Q_LRLX);
-
-	} else {
-		log_exit("Unknown dir: %d", dir);
+			//
+			// Set the color pair and print the character.
+			//
+			attron(COLOR_PAIR(color_pair));
+			mvwaddwstr(win, hex_ul_row + row, hex_ul_col + col, chr);
+		}
 	}
 }
 
@@ -229,13 +411,28 @@ int main() {
 
 	s_point hex_idx_tmp;
 
-	ship_init();
+	ship_field_init();
 
-	s_point_set(&hex_idx_tmp, 1, 1);
-	ship_print(&hex_idx_tmp, 0);
+	s_point_set(&hex_idx_tmp, 1, 2);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_NN], STATE_NORMAL);
 
-	s_point_set(&hex_idx_tmp, 3, 3);
-	ship_print(&hex_idx_tmp, 1);
+	s_point_set(&hex_idx_tmp, 0, 3);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_NE], STATE_NORMAL);
+
+	s_point_set(&hex_idx_tmp, 1, 4);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_SE], STATE_NORMAL);
+
+	s_point_set(&hex_idx_tmp, 2, 4);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_SS], STATE_NORMAL);
+
+	s_point_set(&hex_idx_tmp, 1, 0);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_SW], STATE_NORMAL);
+
+	s_point_set(&hex_idx_tmp, 0, 1);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_NW], STATE_NORMAL);
+
+	s_point_set(&hex_idx_tmp, 2, 5);
+	hex_field_print(stdscr, &hex_idx_tmp, ship_field[DIR_SE], STATE_NORMAL);
 
 	for (;;) {
 		int c = wgetch(stdscr);
