@@ -26,6 +26,7 @@
 #define INC_HG_HEX_H_
 
 #include "hg_common.h"
+#include "hg_color.h"
 
 #define HEX_SIZE 4
 
@@ -55,6 +56,8 @@ typedef struct s_hex_point {
 #define hex_field_is_corner(r,c) ((r) % 3 == 0 && (c) % 3 == 0)
 
 #define hex_point_set(h,c,f,b) (h).chr = (c); (h).fg = (f); (h).bg = (b)
+
+#define hex_point_set_undef(h) (h).chr = W_NULL; (h).fg = COLOR_UNDEF; (h).bg = COLOR_UNDEF
 
 /******************************************************************************
  * The function definitions.
