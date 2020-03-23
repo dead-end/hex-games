@@ -46,6 +46,16 @@ typedef struct s_hex_point {
 } s_hex_point;
 
 /******************************************************************************
+ * The struct is the base of the space. It is a 4x4 array of s_hex_points.
+ *****************************************************************************/
+
+typedef struct s_hex_field {
+
+	s_hex_point point[HEX_SIZE][HEX_SIZE];
+
+} s_hex_field;
+
+/******************************************************************************
  * The macro definitions.
  *****************************************************************************/
 
@@ -62,10 +72,6 @@ typedef struct s_hex_point {
 /******************************************************************************
  * The function definitions.
  *****************************************************************************/
-
-s_hex_point** hex_field_alloc();
-
-void hex_field_free(s_hex_point **hex_field);
 
 void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max);
 

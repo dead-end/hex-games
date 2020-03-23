@@ -26,36 +26,6 @@
 #include "hg_hex.h"
 
 /******************************************************************************
- * The function allocates a 4x4 array of s_hex_point, which represents a hex
- * field.
- *****************************************************************************/
-
-s_hex_point** hex_field_alloc() {
-	s_hex_point **hex_field;
-
-	hex_field = xmalloc(sizeof(s_hex_point*) * HEX_SIZE);
-
-	for (int row = 0; row < HEX_SIZE; row++) {
-		hex_field[row] = xmalloc(sizeof(s_hex_point) * HEX_SIZE);
-	}
-
-	return hex_field;
-}
-
-/******************************************************************************
- * The function frees a hex field.
- *****************************************************************************/
-
-void hex_field_free(s_hex_point **hex_field) {
-
-	for (int row = 0; row < HEX_SIZE; row++) {
-		free(hex_field[row]);
-	}
-
-	free(hex_field);
-}
-
-/******************************************************************************
  * The function computes the hex index from a mouse event, which is the
  * position of the cursor.
  *
