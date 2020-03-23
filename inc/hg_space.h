@@ -28,7 +28,8 @@
 #include "hg_common.h"
 
 /******************************************************************************
- *
+ * The definition of the states of a hex field. This is the space / background
+ * hex field.
  *****************************************************************************/
 
 typedef enum e_state {
@@ -36,6 +37,10 @@ typedef enum e_state {
 	STATE_NORMAL = 0, STATE_SELECT = 1
 
 } e_state;
+
+/******************************************************************************
+ * Macro definitions.
+ *****************************************************************************/
 
 #define space_get_color_pair(bg) cp_color_pair_get(COLOR_WHITE, (bg))
 
@@ -47,7 +52,7 @@ void space_init(s_point *dim_hex);
 
 void space_free();
 
-s_hex_point** space_get_hex_field(const s_point *hex);
+s_hex_field* space_get_field(const s_point *hex);
 
 short space_get_color(const int row, const int col, const e_state state);
 

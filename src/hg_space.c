@@ -35,9 +35,9 @@
 //
 #define RAND_START 24
 
-static s_hex_point ****__space;
+static s_point _dim_space;
 
-static s_point __dim_space;
+static s_hex_field **_space;
 
 short colors_normal[3];
 short colors_select[3];
@@ -102,18 +102,14 @@ short space_get_color(const int row, const int col, const e_state state) {
  * The function allocates the array for the space field.
  *****************************************************************************/
 
-s_hex_point**** space_alloc(const s_point *dim) {
+s_hex_field** space_alloc(const s_point *dim) {
 
 	log_debug("Creating space with: %d/%d hex fields", dim->row, dim->col);
 
-	s_hex_point ****space = xmalloc(sizeof(s_hex_point***) * dim->row);
+	s_hex_field **space = xmalloc(sizeof(s_hex_field*) * dim->row);
 
 	for (int row = 0; row < dim->row; row++) {
-		space[row] = xmalloc(sizeof(s_hex_point**) * dim->col);
-
-		for (int col = 0; col < dim->col; col++) {
-			space[row][col] = hex_field_alloc();
-		}
+		space[row] = xmalloc(sizeof(s_hex_field) * dim->col);
 	}
 
 	return space;
@@ -126,19 +122,11 @@ s_hex_point**** space_alloc(const s_point *dim) {
 void space_free() {
 	log_debug_str("Freeing the space!");
 
-	for (int row = 0; row < __dim_space.row; row++) {
-
-		//
-		// Free the hex fields
-		//
-		for (int col = 0; col < __dim_space.col; col++) {
-			hex_field_free(__space[row][col]);
-		}
-
-		free(__space[row]);
+	for (int row = 0; row < _dim_space.row; row++) {
+		free(_space[row]);
 	}
 
-	free(__space);
+	free(_space);
 }
 
 /******************************************************************************
@@ -150,7 +138,7 @@ void space_free() {
  *  ##
  *****************************************************************************/
 
-static void space_init_hex_field(s_hex_point **hex_block) {
+static void space_hex_field_init(s_hex_field *hex_field) {
 
 #ifdef DEBUG
 	int n_stars = 0;
@@ -162,22 +150,22 @@ static void space_init_hex_field(s_hex_point **hex_block) {
 			//
 			// The background color is defined by the state of the hex field.
 			//
-			hex_block[row][col].bg = COLOR_UNDEF;
+			hex_field->point[row][col].bg = COLOR_UNDEF;
 
 			//
 			// The 4 corners of the array are not necessary for the hex field.
 			//
 			if (hex_field_is_corner(row, col)) {
-				hex_block[row][col].chr = W_NULL;
-				hex_block[row][col].fg = COLOR_UNDEF;
+				hex_field->point[row][col].chr = W_NULL;
+				hex_field->point[row][col].fg = COLOR_UNDEF;
 			}
 
 			//
 			// We use a random distribution for the stars.
 			//
 			else if (rand() % RAND_START == 0) {
-				hex_block[row][col].chr = W_STAR;
-				hex_block[row][col].fg = COLOR_WHITE;
+				hex_field->point[row][col].chr = W_STAR;
+				hex_field->point[row][col].fg = COLOR_WHITE;
 #ifdef DEBUG
 				n_stars++;
 #endif
@@ -187,8 +175,8 @@ static void space_init_hex_field(s_hex_point **hex_block) {
 			// The rest of the chars are empty.
 			//
 			else {
-				hex_block[row][col].chr = W_EMPTY;
-				hex_block[row][col].fg = COLOR_WHITE;
+				hex_field->point[row][col].chr = W_EMPTY;
+				hex_field->point[row][col].fg = COLOR_WHITE;
 			}
 		}
 	}
@@ -200,11 +188,11 @@ static void space_init_hex_field(s_hex_point **hex_block) {
  * represent stars).
  *****************************************************************************/
 
-static void space_init_hex_fields(s_hex_point ****space, const s_point *dim) {
+static void space_hex_fields_init(s_hex_field **space, const s_point *dim) {
 
 	for (int row = 0; row < dim->row; row++) {
 		for (int col = 0; col < dim->col; col++) {
-			space_init_hex_field(space[row][col]);
+			space_hex_field_init(&space[row][col]);
 		}
 	}
 }
@@ -220,17 +208,17 @@ void space_init(s_point *dim_hex) {
 	//
 	// Store the dimensions
 	//
-	s_point_set(&__dim_space, dim_hex->row, dim_hex->col);
+	s_point_set(&_dim_space, dim_hex->row, dim_hex->col);
 
 	//
 	// Allocate the array
 	//
-	__space = space_alloc(dim_hex);
+	_space = space_alloc(dim_hex);
 
 	//
 	// Create stars
 	//
-	space_init_hex_fields(__space, dim_hex);
+	space_hex_fields_init(_space, dim_hex);
 
 	//
 	// Initialize the colors
@@ -242,6 +230,6 @@ void space_init(s_point *dim_hex) {
  * The function returns a hex field by its index.
  *****************************************************************************/
 
-s_hex_point** space_get_hex_field(const s_point *hex) {
-	return __space[hex->row][hex->col];
+s_hex_field* space_get_field(const s_point *hex) {
+	return &_space[hex->row][hex->col];
 }
