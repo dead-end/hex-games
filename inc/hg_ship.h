@@ -32,16 +32,17 @@
 #define DIR_NUM 6
 
 typedef enum dir {
+
 	DIR_NN, DIR_NE, DIR_SE, DIR_SS, DIR_SW, DIR_NW
+
 } e_dir;
 
 /******************************************************************************
- *
+ * The struct defines a ship type. Currently the different ship types have
+ * different colors.
  *****************************************************************************/
-// TODO: currently not used.
-typedef struct s_ship_type {
 
-	// TODO: maybe int id => array index ???
+typedef struct s_ship_type {
 
 	short c_dark;
 
@@ -52,13 +53,25 @@ typedef struct s_ship_type {
 } s_ship_type;
 
 /******************************************************************************
- *
+ * The enum value is the id of the ship type.
+ *****************************************************************************/
+
+typedef enum e_ship_type {
+
+	SHIP_TYPE_NORMAL
+
+} e_ship_type;
+
+/******************************************************************************
+ * Definition of the functions.
  *****************************************************************************/
 
 void ship_field_init();
 
 void ship_field_free();
 
-void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_point **ship_field);
+void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field);
+
+s_ship_type* ship_type_get(e_ship_type ship_type);
 
 #endif /* INC_HG_SHIP_H_ */
