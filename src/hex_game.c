@@ -39,16 +39,15 @@
 
 #include "hg_ship.h"
 
-// ----------------------------------------------------------------------------
-
 /******************************************************************************
  * The function prints a hex field. It is called with the state for the
  * underlying hex field of the space. If the hex field is null, then the space
  * hex field is printed.
  *****************************************************************************/
 
-void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_field_fg, const e_state state) {
+void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, const e_state state) {
 
+	s_hex_point *hex_point_fg;
 	short color_pair;
 	short color_bg;
 	wchar_t *chr;
@@ -74,7 +73,7 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 	//
 	// Get the hex field of the space.
 	//
-	s_hex_point **hex_field_space = space_get_hex_field(hex_idx);
+	s_hex_field *hex_field_space = space_get_field(hex_idx);
 
 	for (int row = 0; row < HEX_SIZE; row++) {
 		for (int col = 0; col < HEX_SIZE; col++) {
@@ -90,8 +89,8 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 			// If the foreground hex field is undefined, we print the hex field
 			// of the space.
 			//
-			if (hex_field_fg == NULL || hex_field_fg[row][col].chr == W_NULL) {
-				chr = hex_field_space[row][col].chr;
+			if (hex_field_fg == NULL || hex_field_fg->point[row][col].chr == W_NULL) {
+				chr = hex_field_space->point[row][col].chr;
 				color_pair = color_pair_space;
 			}
 
@@ -99,14 +98,20 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 			//
 			//
 			else {
-				chr = hex_field_fg[row][col].chr;
+
+				//
+				// Store the hex point
+				//
+				hex_point_fg = &hex_field_fg->point[row][col];
+
+				chr = hex_point_fg->chr;
 
 				//
 				// If the foreground hex field has a background color, we use
 				// this. Otherwise we used the background color of the sapce.
 				//
-				color_bg = hex_field_fg[row][col].bg == COLOR_UNDEF ? color_space_bg : hex_field_fg[row][col].bg;
-				color_pair = cp_color_pair_get(hex_field_fg[row][col].fg, color_bg);
+				color_bg = hex_point_fg->bg == COLOR_UNDEF ? color_space_bg : hex_point_fg->bg;
+				color_pair = cp_color_pair_get(hex_point_fg->fg, color_bg);
 			}
 
 			//
@@ -118,8 +123,6 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 	}
 }
 
-// ----------------------------------------------------------------------------
-
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
@@ -128,8 +131,6 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_point **hex_fiel
 static void hg_exit_callback() {
 
 	ncur_exit();
-
-	ship_field_free();
 
 	space_free();
 
@@ -161,8 +162,6 @@ static void hg_init() {
 	srand((unsigned) time(&t));
 }
 
-// ----------------------------------------------------------------------------
-
 /******************************************************************************
  * The function prints the space hex fields of the game.
  *****************************************************************************/
@@ -184,13 +183,7 @@ void print_hex_fields(const s_point *hex_dim) {
  * Main
  *****************************************************************************/
 
-extern s_hex_point **_ship_field_templ[DIR_NUM];
-
-extern s_ship_type ship_type_1;
-
 int main() {
-
-	s_hex_point **hex_field = hex_field_alloc();
 
 	s_point hex_idx, hex_idx_old, hex_max;
 
@@ -208,25 +201,34 @@ int main() {
 
 	ship_field_init();
 
+	s_hex_field ship_field;
+
 	s_point_set(&hex_idx_tmp, 0, 1);
 
-	//ship_get_field(&ship_type_1, DIR_NN, hex_field);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NN], STATE_NORMAL);
+	const s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
+
+	ship_get_field(ship_type_normal, DIR_NN, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 0, 2);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NE], STATE_NORMAL);
+	ship_get_field(ship_type_normal, DIR_NE, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 0, 3);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SE], STATE_NORMAL);
+	ship_get_field(ship_type_normal, DIR_SE, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 1, 3);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SS], STATE_NORMAL);
+	ship_get_field(ship_type_normal, DIR_SS, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 2, 2);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SW], STATE_NORMAL);
+	ship_get_field(ship_type_normal, DIR_SW, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 1, 1);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NW], STATE_NORMAL);
+	ship_get_field(ship_type_normal, DIR_NW, &ship_field);
+	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, STATE_NORMAL);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -267,8 +269,6 @@ int main() {
 			}
 		}
 	}
-
-	hex_field_free(hex_field);
 
 	//
 	// Cleanup is handled with the exit callback.
