@@ -184,9 +184,13 @@ void print_hex_fields(const s_point *hex_dim) {
  * Main
  *****************************************************************************/
 
-extern s_hex_point **_ship_field[DIR_NUM];
+extern s_hex_point **_ship_field_templ[DIR_NUM];
+
+extern s_ship_type ship_type_1;
 
 int main() {
+
+	s_hex_point **hex_field = hex_field_alloc();
 
 	s_point hex_idx, hex_idx_old, hex_max;
 
@@ -205,22 +209,24 @@ int main() {
 	ship_field_init();
 
 	s_point_set(&hex_idx_tmp, 0, 1);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_NN], STATE_NORMAL);
+
+	//ship_get_field(&ship_type_1, DIR_NN, hex_field);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NN], STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 0, 2);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_NE], STATE_NORMAL);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NE], STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 0, 3);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_SE], STATE_NORMAL);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SE], STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 1, 3);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_SS], STATE_NORMAL);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SS], STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 2, 2);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_SW], STATE_NORMAL);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_SW], STATE_NORMAL);
 
 	s_point_set(&hex_idx_tmp, 1, 1);
-	hex_field_print(stdscr, &hex_idx_tmp, _ship_field[DIR_NW], STATE_NORMAL);
+	hex_field_print(stdscr, &hex_idx_tmp, _ship_field_templ[DIR_NW], STATE_NORMAL);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -261,6 +267,8 @@ int main() {
 			}
 		}
 	}
+
+	hex_field_free(hex_field);
 
 	//
 	// Cleanup is handled with the exit callback.

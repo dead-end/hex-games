@@ -39,11 +39,16 @@ short blue_dark;
 short blue_light;
 short yellow;
 
+#define C_UNDEF COLOR_UNDEF
+#define C_DARK C_UNDEF -1
+#define C_LIGHT C_UNDEF -2
+#define C_YELLOW C_UNDEF -3
+
 /******************************************************************************
  * The definition of the ship templates.
  *****************************************************************************/
 
-s_hex_point **_ship_field[DIR_NUM];
+s_hex_point **_ship_field_templ[DIR_NUM];
 
 /******************************************************************************
  * The function allocates the memory for the ship field.
@@ -52,7 +57,7 @@ s_hex_point **_ship_field[DIR_NUM];
 static void ship_field_alloc() {
 
 	for (int i = 0; i < DIR_NUM; i++) {
-		_ship_field[i] = hex_field_alloc();
+		_ship_field_templ[i] = hex_field_alloc();
 	}
 }
 
@@ -63,7 +68,86 @@ static void ship_field_alloc() {
 void ship_field_free() {
 
 	for (int i = 0; i < DIR_NUM; i++) {
-		hex_field_free(_ship_field[i]);
+		hex_field_free(_ship_field_templ[i]);
+	}
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+// TODO: unused
+s_ship_type ship_type_1;
+
+void ship_type_init() {
+
+	ship_type_1.c_dark = col_color_create(300, 300, 700);
+
+	ship_type_1.c_light = col_color_create(400, 400, 700);
+
+	ship_type_1.c_yellow = col_color_create(900, 800, 0);
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+// TODO: unused
+static short ship_translate(const s_ship_type *ship_type, short color_temp) {
+
+	switch (color_temp) {
+
+	case C_UNDEF:
+		return C_UNDEF;
+
+	case C_DARK:
+		return ship_type->c_dark;
+
+	case C_LIGHT:
+		return ship_type->c_light;
+
+	case C_YELLOW:
+		return ship_type->c_yellow;
+
+	default:
+		log_exit("Unknown template color: %d", color_temp)
+		;
+	}
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+// TODO: unused
+void ship_get_hex_point(const s_ship_type *ship_type, const e_dir dir, const int row, const int col, s_hex_point *hex_point) {
+
+	s_hex_point ship_templ = _ship_field_templ[dir][row][col];
+
+	hex_point->chr = ship_templ.chr;
+
+	hex_point->fg = ship_translate(ship_type, ship_templ.fg);
+
+	hex_point->bg = ship_translate(ship_type, ship_templ.bg);
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+// TODO: unused
+void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_point **ship_field) {
+
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
+
+			s_hex_point ship_templ = _ship_field_templ[dir][row][col];
+
+			ship_field[row][col].chr = ship_templ.chr;
+
+			ship_field[row][col].fg = ship_translate(ship_type, ship_templ.fg);
+
+			ship_field[row][col].bg = ship_translate(ship_type, ship_templ.bg);
+		}
 	}
 }
 
@@ -97,7 +181,7 @@ void ship_field_init() {
 	s_hex_point **ship;
 
 	// Direction NN
-	ship = _ship_field[DIR_NN];
+	ship = _ship_field_templ[DIR_NN];
 	ship_field_corners(ship);
 
 	hex_point_set(ship[0][1], Q_XRLR, blue_dark, COLOR_UNDEF);
@@ -117,7 +201,7 @@ void ship_field_init() {
 	hex_point_set_undef(ship[3][2]);
 
 	// Direction NN
-	ship = _ship_field[DIR_NE];
+	ship = _ship_field_templ[DIR_NE];
 	ship_field_corners(ship);
 
 	hex_point_set_undef(ship[0][1]);
@@ -137,7 +221,7 @@ void ship_field_init() {
 	hex_point_set(ship[3][2], Q_LRLX, blue_light, COLOR_UNDEF);
 
 	// Direction NN
-	ship = _ship_field[DIR_SE];
+	ship = _ship_field_templ[DIR_SE];
 	ship_field_corners(ship);
 
 	hex_point_set(ship[0][1], Q_XRLR, yellow, COLOR_UNDEF);
@@ -157,7 +241,7 @@ void ship_field_init() {
 	hex_point_set_undef(ship[3][2]);
 
 	// Direction SS
-	ship = _ship_field[DIR_SS];
+	ship = _ship_field_templ[DIR_SS];
 	ship_field_corners(ship);
 
 	hex_point_set_undef(ship[0][1]);
@@ -177,7 +261,7 @@ void ship_field_init() {
 	hex_point_set(ship[3][2], Q_LRLX, blue_light, COLOR_UNDEF);
 
 	// Direction NN
-	ship = _ship_field[DIR_SW];
+	ship = _ship_field_templ[DIR_SW];
 	ship_field_corners(ship);
 
 	hex_point_set(ship[0][1], Q_XRLR, blue_dark, COLOR_UNDEF);
@@ -197,7 +281,7 @@ void ship_field_init() {
 	hex_point_set_undef(ship[3][2]);
 
 	// Direction NN
-	ship = _ship_field[DIR_NW];
+	ship = _ship_field_templ[DIR_NW];
 	ship_field_corners(ship);
 
 	hex_point_set_undef(ship[0][1]);

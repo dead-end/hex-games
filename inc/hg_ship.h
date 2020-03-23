@@ -59,4 +59,6 @@ void ship_field_init();
 
 void ship_field_free();
 
+void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_point **ship_field);
+
 #endif /* INC_HG_SHIP_H_ */
