@@ -58,6 +58,7 @@ SRC_LIBS = \
 	$(SRC_DIR)/hg_color_pair.c \
 	$(SRC_DIR)/hg_hex.c \
 	$(SRC_DIR)/hg_space.c \
+	$(SRC_DIR)/hg_ship.c \
 	$(SRC_DIR)/ut_utils.c \
 	$(SRC_DIR)/ut_hex.c \
 
