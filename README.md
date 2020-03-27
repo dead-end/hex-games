@@ -72,9 +72,7 @@ qsort(_cp_array, _cp_num, sizeof(s_color_pair), col_color_pair_comp);
 And the we can lookup the color pair:
 
 ```
-s_color_pair key;
-key.fg = fg;
-key.bg = bg;
+s_color_pair key = { .fg = fg, .bg = bg };
 
 s_color_pair *result = bsearch(&key, _cp_array, _cp_num, sizeof(s_color_pair), col_color_pair_comp);
 ```
