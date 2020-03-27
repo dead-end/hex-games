@@ -49,10 +49,16 @@ short colors_select[3];
 static void space_init_colors() {
 	log_debug_str("Init the space colors and color pairs!");
 
+	//
+	// The shadings of the color for the normal state
+	//
 	colors_normal[0] = col_color_create(50, 50, 50);
 	colors_normal[1] = col_color_create(80, 80, 80);
 	colors_normal[2] = col_color_create(110, 110, 110);
 
+	//
+	// The shadings of the color for the selected state
+	//
 	colors_select[0] = col_color_create(250, 150, 150);
 	colors_select[1] = col_color_create(280, 180, 180);
 	colors_select[2] = col_color_create(310, 210, 210);
@@ -69,18 +75,23 @@ static void space_init_colors() {
 }
 
 /******************************************************************************
- * The macro definitions.
+ * The macro definition to get the shading of the background color.
  *****************************************************************************/
 
 #define space_get_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
 
 /******************************************************************************
- *
+ * The function returns the background color of the space. This depends on the
+ * state of the hex field and the row / col index, which defines the shading of
+ * the requested color.
  *****************************************************************************/
 
-short space_get_color(const int row, const int col, const e_state state) {
+short space_get_bg_color(const int row, const int col, const e_state state) {
 	short result;
 
+	//
+	// Get the index of the shading (0,1,2)
+	//
 	const int idx = space_get_bg_color_idx(row, col);
 
 	if (state == STATE_NORMAL) {
