@@ -54,6 +54,8 @@ static s_color_pair _cp_array[CP_MAX];
 //
 #define CP_START 8
 
+bool _is_sorted = false;
+
 /*******************************************************************************
  * The macro logs the given color pair.
  ******************************************************************************/
@@ -91,11 +93,16 @@ static int col_color_pair_comp(const void *ptr1, const void *ptr2) {
  * library.
  ******************************************************************************/
 
-void cp_color_pair_sort() {
+static void cp_color_pair_sort() {
 
 	log_debug("Sorting array with: %ld elements.", _cp_num);
 
 	qsort(_cp_array, _cp_num, sizeof(s_color_pair), col_color_pair_comp);
+
+	//
+	// Mark the array as sorted.
+	//
+	_is_sorted = true;
 }
 
 /*******************************************************************************
@@ -133,6 +140,11 @@ short cp_color_pair_add(const short fg, const short bg) {
 	//
 	_cp_num++;
 
+	//
+	// If we added a new element, the array is sorted.
+	//
+	_is_sorted = false;
+
 	return cp_ptr->cp;
 }
 
@@ -146,13 +158,14 @@ short cp_color_pair_get(const short fg, const short bg) {
 
 	log_debug("Search fg: %d bg: %d", fg, bg);
 
+	if (!_is_sorted) {
+		cp_color_pair_sort();
+	}
+
 	//
 	// Create a key for the search
 	//
-	s_color_pair key;
-
-	key.fg = fg;
-	key.bg = bg;
+	s_color_pair key = { .fg = fg, .bg = bg };
 
 	//
 	// Do the searching.
@@ -168,12 +181,8 @@ short cp_color_pair_get(const short fg, const short bg) {
 	}
 
 	//
-	// If the color pair was not found in the array, we add it to the array.
-	// Then we need to sort it and return the color pair id for the new entry.
+	// If the color pair was not found in the array, we add it to the array
+	// and return the result.
 	//
-	const short cp = cp_color_pair_add(fg, bg);
-
-	cp_color_pair_sort();
-
-	return cp;
+	return cp_color_pair_add(fg, bg);
 }

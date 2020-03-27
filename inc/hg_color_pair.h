@@ -27,8 +27,6 @@
 
 short cp_color_pair_add(const short fg, const short bg);
 
-void cp_color_pair_sort();
-
 short cp_color_pair_get(const short fg, const short bg);
 
 #endif /* RES_HG_COLOR_H_ */
