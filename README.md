@@ -37,4 +37,48 @@ colors for adjacent hex fields.
 
 ![Hex fields with 3 colors](res/hex-fields-3-colors.png)
 
+### Color pair lookup
+
+Since ncurses uses color pairs consisting of foreground and background colors,
+the number of color pairs is exploding, when we use shadings of the background
+colors. It is a good idea to use a lookup map to identify the color pair for a
+given pair of forground and background colors. The number of forground and 
+background colors is fixed so the map does not change during the game.
+We can define a struct for the combination:
+
+```
+typedef struct {
+
+	short fg;
+	short bg;
+	short cp;
+
+} s_color_pair;
+```
+
+We create an array for the struct and keep track of the number of elements in
+the array. After we added the color pairs we have to sort the result.
+
+```
+#define CP_MAX 64
+
+size_t _cp_num = 0;
+
+s_color_pair _cp_array[CP_MAX];
+
+qsort(_cp_array, _cp_num, sizeof(s_color_pair), col_color_pair_comp);
+```
+
+And the we can lookup the color pair:
+
+```
+s_color_pair key;
+key.fg = fg;
+key.bg = bg;
+
+s_color_pair *result = bsearch(&key, _cp_array, _cp_num, sizeof(s_color_pair), col_color_pair_comp);
+```
+
+## Current state
+
 ![Current state](res/current-state.gif)
