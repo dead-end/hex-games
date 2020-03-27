@@ -40,6 +40,24 @@
 #include "hg_ship.h"
 
 /******************************************************************************
+ * The function prints a ship at a given position.
+ *
+ * TODO: WINDOW ???
+ *****************************************************************************/
+
+void print_ship(const int row, const int col, const s_ship_type *ship_type, const e_dir dir, const e_state state) {
+	s_hex_field hf_tmp_bg, hf_tmp_fg;
+
+	const s_point hex_idx = { .row = row, .col = col };
+
+	ship_get_hex_field(ship_type, dir, &hf_tmp_fg);
+
+	space_get_hex_field(&hex_idx, state, &hf_tmp_bg);
+
+	hex_field_print(stdscr, &hex_idx, &hf_tmp_fg, &hf_tmp_bg);
+}
+
+/******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
  * important if the program terminates after an error.
  *****************************************************************************/
@@ -103,13 +121,13 @@ void print_hex_fields(const s_point *hex_dim) {
 
 int main() {
 
-	s_hex_field space_field_tmp;
+	s_hex_field hf_tmp_bg;
 
-	s_point hex_idx, hex_idx_old, hex_max;
+	s_point hex_idx;
 
-	s_point_set(&hex_idx_old, -1, -1);
+	const s_point hex_max = { .row = 5, .col = 12 };
 
-	s_point_set(&hex_max, 5, 12);
+	s_point hex_idx_old = { .row = -1, .col = -1 };
 
 	hg_init();
 
@@ -117,44 +135,16 @@ int main() {
 
 	print_hex_fields(&hex_max);
 
-	s_point hex_idx_tmp;
-
 	ship_field_init();
-
-	s_hex_field ship_field;
-
-	s_point_set(&hex_idx_tmp, 0, 1);
 
 	const s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
 
-	ship_get_hex_field(ship_type_normal, DIR_NN, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
-
-	s_point_set(&hex_idx_tmp, 0, 2);
-	ship_get_hex_field(ship_type_normal, DIR_NE, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
-
-	s_point_set(&hex_idx_tmp, 0, 3);
-	ship_get_hex_field(ship_type_normal, DIR_SE, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
-
-	s_point_set(&hex_idx_tmp, 1, 3);
-	ship_get_hex_field(ship_type_normal, DIR_SS, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
-
-	s_point_set(&hex_idx_tmp, 2, 2);
-	ship_get_hex_field(ship_type_normal, DIR_SW, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
-
-	s_point_set(&hex_idx_tmp, 1, 1);
-	ship_get_hex_field(ship_type_normal, DIR_NW, &ship_field);
-	space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-	hex_field_print(stdscr, &hex_idx_tmp, &ship_field, &space_field_tmp);
+	print_ship(0, 1, ship_type_normal, DIR_NN, STATE_NORMAL);
+	print_ship(0, 2, ship_type_normal, DIR_NE, STATE_NORMAL);
+	print_ship(0, 3, ship_type_normal, DIR_SE, STATE_NORMAL);
+	print_ship(1, 3, ship_type_normal, DIR_SS, STATE_NORMAL);
+	print_ship(2, 2, ship_type_normal, DIR_SW, STATE_NORMAL);
+	print_ship(1, 1, ship_type_normal, DIR_NW, STATE_NORMAL);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -181,16 +171,16 @@ int main() {
 				// Delete old
 				//
 				if (hex_idx_old.row >= 0 && hex_idx_old.col >= 0) {
-					space_get_hex_field(&hex_idx_old, STATE_NORMAL, &space_field_tmp);
-					hex_field_print(stdscr, &hex_idx_old, NULL, &space_field_tmp);
+					space_get_hex_field(&hex_idx_old, STATE_NORMAL, &hf_tmp_bg);
+					hex_field_print(stdscr, &hex_idx_old, NULL, &hf_tmp_bg);
 				}
 
 				//
 				// Print new
 				//
 				if (hex_idx.row >= 0 && hex_idx.col >= 0) {
-					space_get_hex_field(&hex_idx, STATE_SELECT, &space_field_tmp);
-					hex_field_print(stdscr, &hex_idx, NULL, &space_field_tmp);
+					space_get_hex_field(&hex_idx, STATE_SELECT, &hf_tmp_bg);
+					hex_field_print(stdscr, &hex_idx, NULL, &hf_tmp_bg);
 				}
 
 				s_point_copy(&hex_idx_old, &hex_idx);
