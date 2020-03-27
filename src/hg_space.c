@@ -238,9 +238,40 @@ void space_init(s_point *dim_hex) {
 }
 
 /******************************************************************************
- * The function returns a hex field by its index.
+ * The function copies the content of the hex field from the space array to the
+ * hex field, given by the parameter. The background color is adjusted
+ * depending on the state of the space hex field.
  *****************************************************************************/
 
-s_hex_field* space_get_field(const s_point *hex) {
-	return &_space[hex->row][hex->col];
+void space_get_hex_field(const s_point *hex_idx, const e_state state, s_hex_field *space_field) {
+
+#ifdef DEBUG
+
+	//
+	// Ensure that the index is inside the allowed ranges.
+	//
+	if (hex_idx->row < 0 || hex_idx->row >= _dim_space.row || hex_idx->col < 0 || hex_idx->col >= _dim_space.col) {
+		log_debug("hex field index out of range: %d/%d", hex_idx->row, hex_idx->col);
+	}
+#endif
+
+	//
+	// The hex field from the space array, which is the template.
+	//
+	const s_hex_field *space_tmpl = &_space[hex_idx->row][hex_idx->col];
+
+	//
+	// The background color, which depends on the state of the space hex field
+	// as well as the shading.
+	//
+	const short color_space_bg = space_get_bg_color(hex_idx->row, hex_idx->col, state);
+
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
+
+			space_field->point[row][col].chr = space_tmpl->point[row][col].chr;
+			space_field->point[row][col].fg = space_tmpl->point[row][col].fg;
+			space_field->point[row][col].bg = color_space_bg;
+		}
+	}
 }
