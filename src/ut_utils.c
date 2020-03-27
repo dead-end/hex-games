@@ -37,3 +37,16 @@ void ut_check_int(const int current, const int expected, const char *msg) {
 	log_debug("[%s] OK current: %d", msg, current);
 }
 
+/******************************************************************************
+ * The function checks whether an short parameter has the expected value or not.
+ *****************************************************************************/
+
+void ut_check_short(const short current, const short expected, const char *msg) {
+
+	if (current != expected) {
+		log_exit("[%s] current: %d expected: %d", msg, current, expected);
+	}
+
+	log_debug("[%s] OK current: %d", msg, current);
+}
+
