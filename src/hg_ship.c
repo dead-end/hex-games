@@ -128,7 +128,7 @@ static short ship_translate(const short color_temp, const s_ship_type *ship_type
  * s_ship_type.
  *****************************************************************************/
 
-void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field) {
+void ship_get_hex_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field) {
 	s_hex_point *hp_templ, *hp_ship;
 
 	//

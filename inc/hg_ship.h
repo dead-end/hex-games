@@ -70,7 +70,7 @@ void ship_field_init();
 
 void ship_field_free();
 
-void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field);
+void ship_get_hex_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field);
 
 s_ship_type* ship_type_get(e_ship_type ship_type);
 
