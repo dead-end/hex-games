@@ -54,6 +54,6 @@ void space_free();
 
 s_hex_field* space_get_field(const s_point *hex);
 
-short space_get_color(const int row, const int col, const e_state state);
+short space_get_bg_color(const int row, const int col, const e_state state);
 
 #endif /* INC_HG_SPACE_H_ */

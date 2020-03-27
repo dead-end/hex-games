@@ -157,20 +157,6 @@ void ship_get_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *
 }
 
 /******************************************************************************
- * The function sets the values for the 4 corners of the s_hex_field. The
- * corners are ignored.
- *****************************************************************************/
-
-static void ship_field_corners(s_hex_field *ship_field) {
-	log_debug_str("Setting corners!");
-
-	hex_point_set_undef(ship_field->point[0][0]);
-	hex_point_set_undef(ship_field->point[0][3]);
-	hex_point_set_undef(ship_field->point[3][0]);
-	hex_point_set_undef(ship_field->point[3][3]);
-}
-
-/******************************************************************************
  * The function initializes the ship templates.
  *****************************************************************************/
 
@@ -181,7 +167,7 @@ static void ship_field_init_templ() {
 	// Direction: Noth / North
 	//
 	ship = &_ship_field_templ[DIR_NN];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set(ship->point[0][1], Q_XRLR, C_DARK, C_UNDEF);
 	hex_point_set(ship->point[0][2], Q_LXLR, C_LIGHT, C_UNDEF);
@@ -203,7 +189,7 @@ static void ship_field_init_templ() {
 	// Direction: North / East
 	//
 	ship = &_ship_field_templ[DIR_NE];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
@@ -225,7 +211,7 @@ static void ship_field_init_templ() {
 	// Direction: South / East
 	//
 	ship = &_ship_field_templ[DIR_SE];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set(ship->point[0][1], Q_XRLR, C_YELLOW, C_UNDEF);
 	hex_point_set(ship->point[0][2], Q_LXLR, C_LIGHT, C_UNDEF);
@@ -247,7 +233,7 @@ static void ship_field_init_templ() {
 	// Direction: South / South
 	//
 	ship = &_ship_field_templ[DIR_SS];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
@@ -269,7 +255,7 @@ static void ship_field_init_templ() {
 	// Direction: South / West
 	//
 	ship = &_ship_field_templ[DIR_SW];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set(ship->point[0][1], Q_XRLR, C_DARK, C_UNDEF);
 	hex_point_set(ship->point[0][2], Q_LXLR, C_YELLOW, C_UNDEF);
@@ -291,7 +277,7 @@ static void ship_field_init_templ() {
 	// Direction: North / West
 	//
 	ship = &_ship_field_templ[DIR_NW];
-	ship_field_corners(ship);
+	hex_field_set_corners(ship);
 
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
