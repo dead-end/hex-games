@@ -109,3 +109,17 @@ void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, con
 
 	log_debug("Event - row %d col: %d hex - row: %d col: %d", win_row, win_col, hex_idx->row, hex_idx->col);
 }
+
+/******************************************************************************
+ * The function sets the values for the 4 corners of the s_hex_field. The
+ * corners are ignored.
+ *****************************************************************************/
+
+void hex_field_set_corners(s_hex_field *hex_field) {
+	log_debug_str("Setting corners!");
+
+	hex_point_set_undef(hex_field->point[0][0]);
+	hex_point_set_undef(hex_field->point[0][3]);
+	hex_point_set_undef(hex_field->point[3][0]);
+	hex_point_set_undef(hex_field->point[3][3]);
+}
