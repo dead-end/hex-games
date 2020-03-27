@@ -48,7 +48,7 @@ typedef enum e_state {
  * The function definitions.
  *****************************************************************************/
 
-void space_init(s_point *dim_hex);
+void space_init(const s_point *dim_hex);
 
 void space_free();
 

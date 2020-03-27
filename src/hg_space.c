@@ -30,17 +30,25 @@
 #include "hg_color_pair.h"
 #include "hg_space.h"
 
-//
-// On average 1 of RAND_START chars is a star.
-//
-#define RAND_START 24
+/******************************************************************************
+ * The definition of the space array and the dimension of the space array.
+ *****************************************************************************/
 
 static s_point _dim_space;
 
 static s_hex_field **_space;
 
-short colors_normal[3];
-short colors_select[3];
+/******************************************************************************
+ * The definition of the background colors. The color of the space is black, so
+ * we have 3 shades of black and the rest of the background colors are
+ * selections or highlighting.
+ *****************************************************************************/
+
+#define NUM_SHADES 3
+
+short colors_normal[NUM_SHADES];
+
+short colors_select[NUM_SHADES];
 
 /******************************************************************************
  * The function initializes the colors.
@@ -63,6 +71,9 @@ static void space_init_colors() {
 	colors_select[1] = col_color_create(280, 180, 180);
 	colors_select[2] = col_color_create(310, 210, 210);
 
+	//
+	// Define the color pairs of the space
+	//
 	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
 	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
 	cp_color_pair_add(COLOR_WHITE, colors_normal[2]);
@@ -71,7 +82,6 @@ static void space_init_colors() {
 	cp_color_pair_add(COLOR_WHITE, colors_select[1]);
 	cp_color_pair_add(COLOR_WHITE, colors_select[2]);
 
-	cp_color_pair_sort();
 }
 
 /******************************************************************************
@@ -149,6 +159,11 @@ void space_free() {
  *  ##
  *****************************************************************************/
 
+//
+// On average 1 of RAND_START chars is a star.
+//
+#define RAND_START 24
+
 static void space_hex_field_init(s_hex_field *hex_field) {
 
 #ifdef DEBUG
@@ -212,7 +227,7 @@ static void space_hex_fields_init(s_hex_field **space, const s_point *dim) {
  * The function initializes the background space.
  *****************************************************************************/
 
-void space_init(s_point *dim_hex) {
+void space_init(const s_point *dim_hex) {
 
 	log_debug_str("Init space");
 
