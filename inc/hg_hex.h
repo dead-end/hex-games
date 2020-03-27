@@ -28,6 +28,8 @@
 #include "hg_common.h"
 #include "hg_color.h"
 
+#include "ncurses.h"
+
 #define HEX_SIZE 4
 
 /******************************************************************************
@@ -76,5 +78,7 @@ typedef struct s_hex_field {
 void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max);
 
 void hex_field_set_corners(s_hex_field *hex_field);
+
+void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg);
 
 #endif /* INC_HG_HEX_H_ */

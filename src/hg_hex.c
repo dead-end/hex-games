@@ -24,6 +24,7 @@
 
 #include "hg_common.h"
 #include "hg_hex.h"
+#include "hg_color_pair.h"
 
 /******************************************************************************
  * The function computes the hex index from a mouse event, which is the
@@ -122,4 +123,74 @@ void hex_field_set_corners(s_hex_field *hex_field) {
 	hex_point_set_undef(hex_field->point[0][3]);
 	hex_point_set_undef(hex_field->point[3][0]);
 	hex_point_set_undef(hex_field->point[3][3]);
+}
+
+/******************************************************************************
+ * The function prints a hex field, with a foreground and a background hex
+ * field.
+ *****************************************************************************/
+
+void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg) {
+
+	s_hex_point *hex_point_fg;
+	s_hex_point *hex_point_bg;
+
+	short color_pair;
+	short color_bg;
+	wchar_t *chr;
+
+	//
+	// Get the upper left corner of the field.
+	//
+	const int hex_ul_row = hex_field_ul_row(hex_idx->row, hex_idx->col);
+	const int hex_ul_col = hex_field_ul_col(hex_idx->row, hex_idx->col);
+
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
+
+			//
+			// Ignore the corners of the hex field
+			//
+			if (hex_field_is_corner(row, col)) {
+				continue;
+			}
+
+			hex_point_bg = &hex_field_bg->point[row][col];
+
+			//
+			// If the foreground hex field is undefined, we print the hex field
+			// of the space.
+			//
+			if (hex_field_fg == NULL || hex_field_fg->point[row][col].chr == W_NULL) {
+				chr = hex_point_bg->chr;
+				color_pair = cp_color_pair_get(hex_point_bg->fg, hex_point_bg->bg);
+			}
+
+			//
+			// If the foreground is defined, we have to check the background color.
+			//
+			else {
+
+				//
+				// Store the hex point
+				//
+				hex_point_fg = &hex_field_fg->point[row][col];
+
+				chr = hex_point_fg->chr;
+
+				//
+				// If the foreground hex field has a background color, we use
+				// this. Otherwise we used the background color of the space.
+				//
+				color_bg = hex_point_fg->bg == COLOR_UNDEF ? hex_point_bg->bg : hex_point_fg->bg;
+				color_pair = cp_color_pair_get(hex_point_fg->fg, color_bg);
+			}
+
+			//
+			// Set the color pair and print the character.
+			//
+			attron(COLOR_PAIR(color_pair));
+			mvwaddwstr(win, hex_ul_row + row, hex_ul_col + col, chr);
+		}
+	}
 }
