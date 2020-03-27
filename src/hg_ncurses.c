@@ -37,7 +37,7 @@ static void ncur_init_mouse() {
 	}
 
 	//
-	// Register mouse events (which do not have a propper error handling)
+	// Register mouse events (which do not have a proper error handling)
 	//
 	mousemask(BUTTON1_RELEASED | BUTTON1_CLICKED | BUTTON1_PRESSED | REPORT_MOUSE_POSITION, NULL);
 
