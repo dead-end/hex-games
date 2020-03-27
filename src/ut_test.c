@@ -25,6 +25,7 @@
 #include <stdlib.h>
 
 #include "ut_hex.h"
+#include "ut_color_pair.h"
 
 /******************************************************************************
  * The main function delegates the call to the individual unit test functions.
@@ -33,6 +34,8 @@
 int main() {
 
 	ut_hex_exec();
+
+	ut_color_pair_exec();
 
 	return EXIT_SUCCESS;
 }
