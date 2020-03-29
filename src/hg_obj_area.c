@@ -32,7 +32,7 @@
 
 static s_point _dim_space;
 
-static s_object **_obj_area;
+s_object **_obj_area;
 
 /******************************************************************************
  * The function allocates the array for the object area.

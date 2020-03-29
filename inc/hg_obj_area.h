@@ -43,13 +43,31 @@ typedef enum {
 
 typedef struct {
 
+	//
+	// The type of the object.
+	//
 	e_object obj;
 
+	//
+	// A union with pointers for the different object types.
+	//
 	union {
-		s_ship_inst ship;
+		s_ship_inst *ship_inst;
 	};
 
 } s_object;
+
+/******************************************************************************
+ * Macros to access the object area.
+ *****************************************************************************/
+
+extern s_object **_obj_area;
+
+#define s_object_set_ship(o,i) (o)->obj = OBJ_SHIP; (o)->ship_inst = (i)
+
+#define s_object_set_ship_at(r,c,i) _obj_area[r][c].obj = OBJ_SHIP; _obj_area[r][c].ship_inst = (i)
+
+#define obj_area_get(r,c) &_obj_area[r][c]
 
 /******************************************************************************
  * The definitions of the functions.
