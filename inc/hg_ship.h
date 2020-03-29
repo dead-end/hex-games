@@ -73,16 +73,22 @@ typedef struct {
 typedef struct {
 
 	//
-	// The type of the ship
-	//
-	s_ship_type ship_type;
-
-	//
-	// The direction of the ahip.
+	// The direction of the ship.
 	//
 	e_dir dir;
 
+	//
+	// The type of the ship
+	//
+	s_ship_type *ship_type;
+
 } s_ship_inst;
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+#define s_ship_inst_set(s,d,t) (s)->dir = (d); (s)->ship_type = (t)
 
 /******************************************************************************
  * Definition of the functions.
