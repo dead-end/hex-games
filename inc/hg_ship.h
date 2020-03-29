@@ -62,6 +62,9 @@ typedef enum {
 
 typedef struct {
 
+	//
+	// The color definitions of the ship type.
+	//
 	short color[3];
 
 } s_ship_type;
