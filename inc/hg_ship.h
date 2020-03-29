@@ -38,29 +38,49 @@ typedef enum dir {
 } e_dir;
 
 /******************************************************************************
- * The struct defines a ship type. Currently the different ship types have
- * different colors.
- *****************************************************************************/
-
-typedef struct s_ship_type {
-
-	short c_dark;
-
-	short c_light;
-
-	short c_yellow;
-
-} s_ship_type;
-
-/******************************************************************************
  * The enum value is the id of the ship type.
  *****************************************************************************/
 
-typedef enum e_ship_type {
+typedef enum {
 
 	SHIP_TYPE_NORMAL
 
 } e_ship_type;
+
+/******************************************************************************
+ * The struct defines a ship type. Currently the different ship types have
+ * different colors.
+ *****************************************************************************/
+
+#define ST_UNDEF COLOR_UNDEF
+
+#define ST_ENGINE 0
+#define ST_DARK 1
+#define ST_LIGHT 2
+
+typedef struct {
+
+	short color[3];
+
+} s_ship_type;
+
+/******************************************************************************
+ * The definition of an instance of a ship.
+ *****************************************************************************/
+
+typedef struct {
+
+	//
+	// The type of the ship
+	//
+	s_ship_type ship_type;
+
+	//
+	// The direction of the ahip.
+	//
+	e_dir dir;
+
+} s_ship_inst;
 
 /******************************************************************************
  * Definition of the functions.

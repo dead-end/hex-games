@@ -26,7 +26,7 @@
 #include "hg_ship.h"
 
 /******************************************************************************
- * The definition the characters that are used for the ships.
+ * The definition of the characters that are used for the ships.
  *****************************************************************************/
 
 //
@@ -52,20 +52,6 @@
 #define Q_LRXR L"\x259C"
 
 /******************************************************************************
- * The definition of the template colors. They have to be replaced with the
- * colors of the ship type. So the value is negative, to ensure an error if the
- * mapping failed.
- *****************************************************************************/
-
-#define C_UNDEF COLOR_UNDEF
-
-#define C_DARK -2
-
-#define C_LIGHT -3
-
-#define C_YELLOW -4
-
-/******************************************************************************
  * The definition of the ship templates.
  *****************************************************************************/
 
@@ -80,9 +66,9 @@ s_ship_type _ship_type[1];
 
 static void ship_type_init() {
 
-	_ship_type[SHIP_TYPE_NORMAL].c_dark = col_color_create(300, 300, 700);
-	_ship_type[SHIP_TYPE_NORMAL].c_light = col_color_create(400, 400, 700);
-	_ship_type[SHIP_TYPE_NORMAL].c_yellow = col_color_create(900, 800, 0);
+	_ship_type[SHIP_TYPE_NORMAL].color[ST_ENGINE] = col_color_create(900, 800, 0);
+	_ship_type[SHIP_TYPE_NORMAL].color[ST_DARK] = col_color_create(300, 300, 700);
+	_ship_type[SHIP_TYPE_NORMAL].color[ST_LIGHT] = col_color_create(400, 400, 700);
 }
 
 /******************************************************************************
@@ -96,31 +82,11 @@ s_ship_type* ship_type_get(e_ship_type ship_type) {
 }
 
 /******************************************************************************
- * The function maps the color from the template to color defined for the ship
+ * The macro maps the color from the template to color defined for the ship
  * type.
  *****************************************************************************/
 
-static short ship_translate(const short color_temp, const s_ship_type *ship_type) {
-
-	switch (color_temp) {
-
-	case C_UNDEF:
-		return C_UNDEF;
-
-	case C_DARK:
-		return ship_type->c_dark;
-
-	case C_LIGHT:
-		return ship_type->c_light;
-
-	case C_YELLOW:
-		return ship_type->c_yellow;
-
-	default:
-		log_exit("Unknown template color: %d", color_temp)
-		;
-	}
-}
+#define ship_translate(c,t) ((c) == ST_UNDEF ? ST_UNDEF : (t)->color[c])
 
 /******************************************************************************
  * The function copies the s_hex_field from the template to the given
@@ -169,18 +135,18 @@ static void ship_field_init_templ() {
 	ship = &_ship_field_templ[DIR_NN];
 	hex_field_set_corners(ship);
 
-	hex_point_set(ship->point[0][1], Q_XRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[0][2], Q_LXLR, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[0][1], Q_XRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[0][2], Q_LXLR, ST_LIGHT, ST_UNDEF);
 
-	hex_point_set(ship->point[1][0], Q_XRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[1][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[1][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[1][3], Q_LXLR, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[1][0], Q_XRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[1][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[1][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[1][3], Q_LXLR, ST_LIGHT, ST_UNDEF);
 
-	hex_point_set(ship->point[2][0], Q_LRLX, C_DARK, C_YELLOW);
-	hex_point_set(ship->point[2][1], Q_LRXR, C_DARK, C_YELLOW);
-	hex_point_set(ship->point[2][2], Q_LRLX, C_LIGHT, C_YELLOW);
-	hex_point_set(ship->point[2][3], Q_LRXR, C_LIGHT, C_YELLOW);
+	hex_point_set(ship->point[2][0], Q_LRLX, ST_DARK, ST_ENGINE);
+	hex_point_set(ship->point[2][1], Q_LRXR, ST_DARK, ST_ENGINE);
+	hex_point_set(ship->point[2][2], Q_LRLX, ST_LIGHT, ST_ENGINE);
+	hex_point_set(ship->point[2][3], Q_LRXR, ST_LIGHT, ST_ENGINE);
 
 	hex_point_set_undef(ship->point[3][1]);
 	hex_point_set_undef(ship->point[3][2]);
@@ -194,18 +160,18 @@ static void ship_field_init_templ() {
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
 
-	hex_point_set(ship->point[1][0], Q_XRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[1][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[1][2], Q_LRLX, C_DARK, C_LIGHT);
-	hex_point_set(ship->point[1][3], Q_UDEF, C_UNDEF, C_UNDEF);
+	hex_point_set(ship->point[1][0], Q_XRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[1][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[1][2], Q_LRLX, ST_DARK, ST_LIGHT);
+	hex_point_set(ship->point[1][3], Q_UDEF, ST_UNDEF, ST_UNDEF);
 
-	hex_point_set(ship->point[2][0], Q_LRXR, C_YELLOW, C_UNDEF);
-	hex_point_set(ship->point[2][1], Q_LRLX, C_DARK, C_LIGHT);
-	hex_point_set(ship->point[2][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[2][3], Q_UDEF, C_UNDEF, C_UNDEF);
+	hex_point_set(ship->point[2][0], Q_LRXR, ST_ENGINE, ST_UNDEF);
+	hex_point_set(ship->point[2][1], Q_LRLX, ST_DARK, ST_LIGHT);
+	hex_point_set(ship->point[2][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[2][3], Q_UDEF, ST_UNDEF, ST_UNDEF);
 
-	hex_point_set(ship->point[3][1], Q_LRXR, C_YELLOW, C_UNDEF);
-	hex_point_set(ship->point[3][2], Q_LRLX, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[3][1], Q_LRXR, ST_ENGINE, ST_UNDEF);
+	hex_point_set(ship->point[3][2], Q_LRLX, ST_LIGHT, ST_UNDEF);
 
 	//
 	// Direction: South / East
@@ -213,18 +179,18 @@ static void ship_field_init_templ() {
 	ship = &_ship_field_templ[DIR_SE];
 	hex_field_set_corners(ship);
 
-	hex_point_set(ship->point[0][1], Q_XRLR, C_YELLOW, C_UNDEF);
-	hex_point_set(ship->point[0][2], Q_LXLR, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[0][1], Q_XRLR, ST_ENGINE, ST_UNDEF);
+	hex_point_set(ship->point[0][2], Q_LXLR, ST_LIGHT, ST_UNDEF);
 
-	hex_point_set(ship->point[1][0], Q_XRLR, C_YELLOW, C_UNDEF);
-	hex_point_set(ship->point[1][1], Q_LXLR, C_DARK, C_LIGHT);
-	hex_point_set(ship->point[1][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[1][3], Q_UDEF, C_UNDEF, C_UNDEF);
+	hex_point_set(ship->point[1][0], Q_XRLR, ST_ENGINE, ST_UNDEF);
+	hex_point_set(ship->point[1][1], Q_LXLR, ST_DARK, ST_LIGHT);
+	hex_point_set(ship->point[1][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[1][3], Q_UDEF, ST_UNDEF, ST_UNDEF);
 
-	hex_point_set(ship->point[2][0], Q_LRXR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[2][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[2][2], Q_LXLR, C_DARK, C_LIGHT);
-	hex_point_set(ship->point[2][3], Q_UDEF, C_UNDEF, C_UNDEF);
+	hex_point_set(ship->point[2][0], Q_LRXR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[2][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[2][2], Q_LXLR, ST_DARK, ST_LIGHT);
+	hex_point_set(ship->point[2][3], Q_UDEF, ST_UNDEF, ST_UNDEF);
 
 	hex_point_set_undef(ship->point[3][1]);
 	hex_point_set_undef(ship->point[3][2]);
@@ -238,18 +204,18 @@ static void ship_field_init_templ() {
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
 
-	hex_point_set(ship->point[1][0], Q_LXLR, C_DARK, C_YELLOW);
-	hex_point_set(ship->point[1][1], Q_XRLR, C_DARK, C_YELLOW);
-	hex_point_set(ship->point[1][2], Q_LXLR, C_LIGHT, C_YELLOW);
-	hex_point_set(ship->point[1][3], Q_XRLR, C_LIGHT, C_YELLOW);
+	hex_point_set(ship->point[1][0], Q_LXLR, ST_DARK, ST_ENGINE);
+	hex_point_set(ship->point[1][1], Q_XRLR, ST_DARK, ST_ENGINE);
+	hex_point_set(ship->point[1][2], Q_LXLR, ST_LIGHT, ST_ENGINE);
+	hex_point_set(ship->point[1][3], Q_XRLR, ST_LIGHT, ST_ENGINE);
 
-	hex_point_set(ship->point[2][0], Q_LRXR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[2][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[2][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[2][3], Q_LRLX, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[2][0], Q_LRXR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[2][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[2][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[2][3], Q_LRLX, ST_LIGHT, ST_UNDEF);
 
-	hex_point_set(ship->point[3][1], Q_LRXR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[3][2], Q_LRLX, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[3][1], Q_LRXR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[3][2], Q_LRLX, ST_LIGHT, ST_UNDEF);
 
 	//
 	// Direction: South / West
@@ -257,18 +223,18 @@ static void ship_field_init_templ() {
 	ship = &_ship_field_templ[DIR_SW];
 	hex_field_set_corners(ship);
 
-	hex_point_set(ship->point[0][1], Q_XRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[0][2], Q_LXLR, C_YELLOW, C_UNDEF);
+	hex_point_set(ship->point[0][1], Q_XRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[0][2], Q_LXLR, ST_ENGINE, ST_UNDEF);
 
-	hex_point_set(ship->point[1][0], Q_UDEF, C_UNDEF, C_UNDEF);
-	hex_point_set(ship->point[1][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[1][2], Q_XRLR, C_LIGHT, C_DARK);
-	hex_point_set(ship->point[1][3], Q_LXLR, C_YELLOW, C_UNDEF);
+	hex_point_set(ship->point[1][0], Q_UDEF, ST_UNDEF, ST_UNDEF);
+	hex_point_set(ship->point[1][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[1][2], Q_XRLR, ST_LIGHT, ST_DARK);
+	hex_point_set(ship->point[1][3], Q_LXLR, ST_ENGINE, ST_UNDEF);
 
-	hex_point_set(ship->point[2][0], Q_UDEF, C_UNDEF, C_UNDEF);
-	hex_point_set(ship->point[2][1], Q_XRLR, C_LIGHT, C_DARK);
-	hex_point_set(ship->point[2][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[2][3], Q_LRLX, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[2][0], Q_UDEF, ST_UNDEF, ST_UNDEF);
+	hex_point_set(ship->point[2][1], Q_XRLR, ST_LIGHT, ST_DARK);
+	hex_point_set(ship->point[2][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[2][3], Q_LRLX, ST_LIGHT, ST_UNDEF);
 
 	hex_point_set_undef(ship->point[3][1]);
 	hex_point_set_undef(ship->point[3][2]);
@@ -282,18 +248,18 @@ static void ship_field_init_templ() {
 	hex_point_set_undef(ship->point[0][1]);
 	hex_point_set_undef(ship->point[0][2]);
 
-	hex_point_set(ship->point[1][0], Q_UDEF, C_UNDEF, C_UNDEF);
-	hex_point_set(ship->point[1][1], Q_LRXR, C_LIGHT, C_DARK);
-	hex_point_set(ship->point[1][2], Q_LRLR, C_LIGHT, C_UNDEF);
-	hex_point_set(ship->point[1][3], Q_LXLR, C_LIGHT, C_UNDEF);
+	hex_point_set(ship->point[1][0], Q_UDEF, ST_UNDEF, ST_UNDEF);
+	hex_point_set(ship->point[1][1], Q_LRXR, ST_LIGHT, ST_DARK);
+	hex_point_set(ship->point[1][2], Q_LRLR, ST_LIGHT, ST_UNDEF);
+	hex_point_set(ship->point[1][3], Q_LXLR, ST_LIGHT, ST_UNDEF);
 
-	hex_point_set(ship->point[2][0], Q_UDEF, C_UNDEF, C_UNDEF);
-	hex_point_set(ship->point[2][1], Q_LRLR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[2][2], Q_LRXR, C_LIGHT, C_DARK);
-	hex_point_set(ship->point[2][3], Q_LRLX, C_YELLOW, C_UNDEF);
+	hex_point_set(ship->point[2][0], Q_UDEF, ST_UNDEF, ST_UNDEF);
+	hex_point_set(ship->point[2][1], Q_LRLR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[2][2], Q_LRXR, ST_LIGHT, ST_DARK);
+	hex_point_set(ship->point[2][3], Q_LRLX, ST_ENGINE, ST_UNDEF);
 
-	hex_point_set(ship->point[3][1], Q_LRXR, C_DARK, C_UNDEF);
-	hex_point_set(ship->point[3][2], Q_LRLX, C_YELLOW, C_UNDEF);
+	hex_point_set(ship->point[3][1], Q_LRXR, ST_DARK, ST_UNDEF);
+	hex_point_set(ship->point[3][2], Q_LRLX, ST_ENGINE, ST_UNDEF);
 }
 
 /******************************************************************************
