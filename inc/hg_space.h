@@ -26,6 +26,7 @@
 #define INC_HG_SPACE_H_
 
 #include "hg_common.h"
+#include "hg_hex.h"
 
 /******************************************************************************
  * The definition of the states of a hex field. This is the space / background
