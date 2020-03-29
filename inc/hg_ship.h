@@ -25,6 +25,8 @@
 #ifndef INC_HG_SHIP_H_
 #define INC_HG_SHIP_H_
 
+#include "hg_hex.h"
+
 /******************************************************************************
  * The definition of the 6 directions of a hex field.
  *****************************************************************************/
