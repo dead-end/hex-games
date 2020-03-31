@@ -33,29 +33,10 @@
 #include "hg_color.h"
 #include "hg_color_pair.h"
 
-#include "hg_hex.h"
-
 #include "hg_space.h"
 
 #include "hg_ship.h"
-
-/******************************************************************************
- * The function prints a ship at a given position.
- *
- * TODO: WINDOW ???
- *****************************************************************************/
-
-void print_ship(const int row, const int col, const s_ship_type *ship_type, const e_dir dir, const e_state state) {
-	s_hex_field hf_tmp_bg, hf_tmp_fg;
-
-	const s_point hex_idx = { .row = row, .col = col };
-
-	ship_get_hex_field(ship_type, dir, &hf_tmp_fg);
-
-	space_get_hex_field(&hex_idx, state, &hf_tmp_bg);
-
-	hex_field_print(stdscr, &hex_idx, &hf_tmp_fg, &hf_tmp_bg);
-}
+#include "hg_obj_area.h"
 
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
@@ -67,6 +48,8 @@ static void hg_exit_callback() {
 	ncur_exit();
 
 	space_free();
+
+	obj_area_free();
 
 	log_debug_str("Exit callback finished!");
 }
@@ -97,22 +80,67 @@ static void hg_init() {
 }
 
 /******************************************************************************
+ *
+ *****************************************************************************/
+
+static void print_object(const s_point *hex_idx, const e_state state) {
+	s_hex_field hf_tmp_bg, hf_tmp_fg;
+
+	const s_object *obj = obj_area_get(hex_idx->row, hex_idx->col);
+
+	switch (obj->obj) {
+
+	case OBJ_NONE:
+
+		log_debug("space: %d/%d", hex_idx->row, hex_idx->col);
+
+		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
+
+		hex_field_print(stdscr, hex_idx, NULL, &hf_tmp_bg);
+		break;
+
+	case OBJ_SHIP:
+
+		log_debug("ship: %d/%d", hex_idx->row, hex_idx->col);
+
+		ship_get_hex_field(obj->ship_inst->ship_type, obj->ship_inst->dir, &hf_tmp_fg);
+		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
+
+		hex_field_print(stdscr, hex_idx, &hf_tmp_fg, &hf_tmp_bg);
+		break;
+
+	default:
+		log_exit("Unknown object type: %d", obj->obj)
+		;
+	}
+}
+
+/******************************************************************************
  * The function prints the space hex fields of the game.
  *****************************************************************************/
 
-void print_hex_fields(const s_point *hex_dim) {
-	log_debug_str("Print hex fields");
+static void print_objects(const s_point *hex_dim) {
+	log_debug_str("Print objects");
 
-	s_hex_field space_field_tmp;
 	s_point hex_idx;
 
 	for (hex_idx.row = 0; hex_idx.row < hex_dim->row; hex_idx.row++) {
 		for (hex_idx.col = 0; hex_idx.col < hex_dim->col; hex_idx.col++) {
 
-			space_get_hex_field(&hex_idx, STATE_NORMAL, &space_field_tmp);
-			hex_field_print(stdscr, &hex_idx, NULL, &space_field_tmp);
+			print_object(&hex_idx, STATE_NORMAL);
 		}
 	}
+}
+
+/******************************************************************************
+ *
+ *****************************************************************************/
+
+static void set_ship(const int row, const int col, s_ship_inst *ship_inst, e_dir dir, s_ship_type *ship_type) {
+
+	s_ship_inst_set(ship_inst, dir, ship_type);
+
+	s_object_set_ship_at(row, col, ship_inst);
 }
 
 /******************************************************************************
@@ -120,8 +148,7 @@ void print_hex_fields(const s_point *hex_dim) {
  *****************************************************************************/
 
 int main() {
-
-	s_hex_field hf_tmp_bg;
+	s_ship_inst ship_inst[1];
 
 	s_point hex_idx;
 
@@ -133,18 +160,16 @@ int main() {
 
 	space_init(&hex_max);
 
-	print_hex_fields(&hex_max);
+	obj_area_init(&hex_max);
 
 	ship_field_init();
 
-	const s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
+	s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
 
-	print_ship(0, 1, ship_type_normal, DIR_NN, STATE_NORMAL);
-	print_ship(0, 2, ship_type_normal, DIR_NE, STATE_NORMAL);
-	print_ship(0, 3, ship_type_normal, DIR_SE, STATE_NORMAL);
-	print_ship(1, 3, ship_type_normal, DIR_SS, STATE_NORMAL);
-	print_ship(2, 2, ship_type_normal, DIR_SW, STATE_NORMAL);
-	print_ship(1, 1, ship_type_normal, DIR_NW, STATE_NORMAL);
+	s_point ship_point = { .row = 2, .col = 2 };
+	set_ship(ship_point.row, ship_point.col, &ship_inst[0], DIR_NN, ship_type_normal);
+
+	print_objects(&hex_max);
 
 	for (;;) {
 		int c = wgetch(stdscr);
@@ -165,22 +190,30 @@ int main() {
 
 			hex_get_hex_idx(event.y, event.x, &hex_idx, &hex_max);
 
+			if (event.bstate & BUTTON1_PRESSED) {
+
+				if (obj_area_mv_ship(&ship_point, &hex_idx, DIR_NN)) {
+					print_object(&ship_point, STATE_NORMAL);
+					print_object(&hex_idx, STATE_NORMAL);
+					s_point_copy(&ship_point, &hex_idx);
+				}
+				continue;
+			}
+
 			if (!s_point_same(&hex_idx, &hex_idx_old)) {
 
 				//
 				// Delete old
 				//
 				if (hex_idx_old.row >= 0 && hex_idx_old.col >= 0) {
-					space_get_hex_field(&hex_idx_old, STATE_NORMAL, &hf_tmp_bg);
-					hex_field_print(stdscr, &hex_idx_old, NULL, &hf_tmp_bg);
+					print_object(&hex_idx_old, STATE_NORMAL);
 				}
 
 				//
 				// Print new
 				//
 				if (hex_idx.row >= 0 && hex_idx.col >= 0) {
-					space_get_hex_field(&hex_idx, STATE_SELECT, &hf_tmp_bg);
-					hex_field_print(stdscr, &hex_idx, NULL, &hf_tmp_bg);
+					print_object(&hex_idx, STATE_SELECT);
 				}
 
 				s_point_copy(&hex_idx_old, &hex_idx);
