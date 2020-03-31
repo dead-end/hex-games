@@ -22,6 +22,8 @@
  * SOFTWARE.
  */
 
+#include <stdbool.h>
+
 #include "hg_obj_area.h"
 #include "hg_common.h"
 
@@ -101,4 +103,109 @@ void obj_area_init(const s_point *dim_hex) {
 	// Initialize the object area with empty objects.
 	//
 	obj_area_init_empty(_obj_area);
+}
+
+/******************************************************************************
+ * The function is called with a current position and a direction. It updates
+ * the "to" point to the adjacent field in the given direction.
+ *****************************************************************************/
+
+void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
+
+	switch (dir) {
+
+	case DIR_NN:
+		to->row = from->row - 1;
+		to->col = from->col;
+		break;
+
+	case DIR_NE:
+		to->row = from->row % 2 == 0 ? from->row - 1 : from->row;
+		to->col = from->col + 1;
+		break;
+
+	case DIR_SE:
+		to->row = from->row % 2 == 0 ? from->row : from->row + 1;
+		to->col = from->col + 1;
+		break;
+
+	case DIR_SS:
+		to->row = from->row + 1;
+		to->col = from->col;
+		break;
+
+	case DIR_SW:
+		to->row = from->row % 2 == 0 ? from->row : from->row + 1;
+		to->col = from->col - 1;
+		break;
+
+	case DIR_NW:
+		to->row = from->row % 2 == 0 ? from->row - 1 : from->row;
+		to->col = from->col - 1;
+		break;
+
+	default:
+		log_exit("Unknown direction: %d", dir)
+		;
+	}
+}
+
+/******************************************************************************
+ * The function moves a ship from one position to an other. The result is not
+ * printed. There are valid cases where the ship is not moved. In this case the
+ * function returns false, otherwise true.
+ *****************************************************************************/
+
+bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir dir) {
+
+	//
+	// Ensure that the target is inside the borders.
+	//
+	if (!s_point_inside(&_dim_space, point_to) {
+		log_debug("Target outside: %d/%d", point_to->row, point_to->col);
+		return false;
+	}
+
+	//
+	// If the source and the target positions are the same, there is nothing to
+	// do. Turning around at the same position is not allowed.
+	//
+	if (s_point_same(point_from, point_to)) {
+		log_debug("Same points: %d/%d", point_from->row, point_from->col);
+		return false;
+	}
+
+	//
+	// Get the source and ensure that this is a ship.
+	//
+	s_object *obj_from = obj_area_get(point_from->row, point_from->col);
+	if (obj_from->obj != OBJ_SHIP) {
+		log_exit("Source is not a ship: %d/%d", point_from->row, point_from->col);
+	}
+
+	//
+	// Get the target and ensure that it is empty. (Maybe in future it will be
+	// possible to fly through an asteroid field.)
+	//
+	s_object *obj_to = obj_area_get(point_to->row, point_to->col);
+	if (obj_to->obj != OBJ_NONE) {
+		log_exit("Target is not empty: %d/%d", point_to->row, point_to->col);
+	}
+
+	//
+	// Update the object type in the source and target.
+	//
+	obj_to->obj = obj_from->obj;
+	obj_from->obj = OBJ_NONE;
+
+	//
+	// Move the ship instance and update the direction.
+	//
+	obj_to->ship_inst = obj_from->ship_inst;
+	obj_to->ship_inst->dir = dir;
+
+	//
+	// Return true to indicate that the ship was moved.
+	//
+	return true;
 }

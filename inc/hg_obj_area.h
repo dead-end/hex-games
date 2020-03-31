@@ -77,4 +77,8 @@ void obj_area_init(const s_point *dim_hex);
 
 void obj_area_free();
 
+void obj_area_goto(const s_point *from, const e_dir dir, s_point *to);
+
+bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir dir);
+
 #endif /* INC_HG_OBJ_AREA_H_ */
