@@ -67,9 +67,9 @@ static void space_init_colors() {
 	//
 	// The shadings of the color for the selected state
 	//
-	colors_select[0] = col_color_create(250, 150, 150);
-	colors_select[1] = col_color_create(280, 180, 180);
-	colors_select[2] = col_color_create(310, 210, 210);
+	colors_select[0] = col_color_create(350, 150, 150);
+	colors_select[1] = col_color_create(380, 180, 180);
+	colors_select[2] = col_color_create(410, 210, 210);
 
 	//
 	// Define the color pairs of the space
@@ -81,7 +81,6 @@ static void space_init_colors() {
 	cp_color_pair_add(COLOR_WHITE, colors_select[0]);
 	cp_color_pair_add(COLOR_WHITE, colors_select[1]);
 	cp_color_pair_add(COLOR_WHITE, colors_select[2]);
-
 }
 
 /******************************************************************************
