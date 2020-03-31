@@ -57,12 +57,14 @@ SRC_LIBS = \
 	$(SRC_DIR)/hg_color.c \
 	$(SRC_DIR)/hg_color_pair.c \
 	$(SRC_DIR)/hg_hex.c \
+	$(SRC_DIR)/hg_dir.c \
 	$(SRC_DIR)/hg_space.c \
 	$(SRC_DIR)/hg_ship.c \
 	$(SRC_DIR)/hg_obj_area.c \
 	$(SRC_DIR)/ut_utils.c \
 	$(SRC_DIR)/ut_hex.c \
 	$(SRC_DIR)/ut_color_pair.c \
+	$(SRC_DIR)/ut_obj_area.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 
