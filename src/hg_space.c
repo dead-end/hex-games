@@ -95,7 +95,7 @@ static void space_init_colors() {
  * the requested color.
  *****************************************************************************/
 
-short space_get_bg_color(const int row, const int col, const e_state state) {
+static short space_get_bg_color(const int row, const int col, const e_state state) {
 	short result;
 
 	//
