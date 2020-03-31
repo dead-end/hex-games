@@ -22,7 +22,6 @@
  * SOFTWARE.
  */
 
-#include "hg_common.h"
 #include "hg_hex.h"
 #include "hg_color_pair.h"
 
