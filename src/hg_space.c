@@ -24,8 +24,6 @@
 
 #include <ncurses.h>
 
-#include "hg_common.h"
-#include "hg_hex.h"
 #include "hg_color.h"
 #include "hg_color_pair.h"
 #include "hg_space.h"
@@ -99,7 +97,7 @@ static short space_get_bg_color(const int row, const int col, const e_state stat
 	short result;
 
 	//
-	// Get the index of the shading (0,1,2)
+	// Get the index of the shading (0, 1, 2)
 	//
 	const int idx = space_get_bg_color_idx(row, col);
 
@@ -122,7 +120,7 @@ static short space_get_bg_color(const int row, const int col, const e_state stat
  * The function allocates the array for the space field.
  *****************************************************************************/
 
-s_hex_field** space_alloc(const s_point *dim) {
+static s_hex_field** space_alloc(const s_point *dim) {
 
 	log_debug("Creating space with: %d/%d hex fields", dim->row, dim->col);
 
@@ -205,6 +203,7 @@ static void space_hex_field_init(s_hex_field *hex_field) {
 			}
 		}
 	}
+
 	log_debug("stars: %d from: 12", n_stars);
 }
 
