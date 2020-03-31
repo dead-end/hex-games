@@ -50,3 +50,17 @@ void ut_check_short(const short current, const short expected, const char *msg) 
 	log_debug("[%s] OK current: %d", msg, current);
 }
 
+/******************************************************************************
+ * The function checks whether a s_point parameter has the expected value or
+ * not.
+ *****************************************************************************/
+
+void ut_check_s_point(const s_point *cur, const s_point *exp, const char *msg) {
+
+	if (cur->row != exp->row || cur->col != exp->col) {
+		log_exit("[%s] current: %d/%d expected: %d/%d", msg, cur->row, cur->col, exp->row, exp->col);
+	}
+
+	log_debug("[%s] OK current: %d/%d", msg, cur->row, cur->col);
+}
+

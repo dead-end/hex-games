@@ -25,8 +25,16 @@
 #ifndef INC_UT_UTILS_H_
 #define INC_UT_UTILS_H_
 
+#include "hg_common.h"
+
+/******************************************************************************
+ * The definitions of the functions.
+ *****************************************************************************/
+
 void ut_check_int(const int current, const int expected, const char *msg);
 
 void ut_check_short(const short current, const short expected, const char *msg);
+
+void ut_check_s_point(const s_point *current, const s_point *expected, const char *msg);
 
 #endif /* INC_UT_UTILS_H_ */
