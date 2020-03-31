@@ -26,18 +26,7 @@
 #define INC_HG_SHIP_H_
 
 #include "hg_hex.h"
-
-/******************************************************************************
- * The definition of the 6 directions of a hex field.
- *****************************************************************************/
-
-#define DIR_NUM 6
-
-typedef enum dir {
-
-	DIR_NN, DIR_NE, DIR_SE, DIR_SS, DIR_SW, DIR_NW
-
-} e_dir;
+#include "hg_dir.h"
 
 /******************************************************************************
  * The enum value is the id of the ship type.
