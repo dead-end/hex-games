@@ -26,6 +26,7 @@
 #define INC_HG_OBJ_AREA_H_
 
 #include "hg_ship.h"
+#include "hg_marker.h"
 
 /******************************************************************************
  * The enum defines the possible object types.
@@ -58,6 +59,8 @@ struct s_object {
 	};
 
 	s_object *neighbour[6];
+
+	s_marker *marker;
 };
 
 /******************************************************************************
@@ -71,6 +74,8 @@ extern s_object **_obj_area;
 #define s_object_set_ship_at(r,c,i) _obj_area[r][c].obj = OBJ_SHIP; _obj_area[r][c].ship_inst = (i)
 
 #define obj_area_get(r,c) &_obj_area[r][c]
+
+#define obj_area_add_marker(r,c,m) _obj_area[r][c].marker = (m)
 
 /******************************************************************************
  * The definitions of the functions.
