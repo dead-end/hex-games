@@ -86,4 +86,6 @@ void hex_field_set_corners(s_hex_field *hex_field);
 
 void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg);
 
+void hex_field_set_bg(s_hex_field *hex_field, const short bg);
+
 #endif /* INC_HG_HEX_H_ */

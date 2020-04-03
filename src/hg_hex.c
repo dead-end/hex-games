@@ -193,3 +193,27 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field
 		}
 	}
 }
+
+/******************************************************************************
+ * The function sets the background color for the hex field.
+ *****************************************************************************/
+
+void hex_field_set_bg(s_hex_field *hex_field, const short bg) {
+
+	for (int row = 0; row < HEX_SIZE; row++) {
+		for (int col = 0; col < HEX_SIZE; col++) {
+
+			//
+			// Ignore the corners of the hex field
+			//
+			if (hex_field_is_corner(row, col)) {
+				continue;
+			}
+
+			//
+			// Update the background color
+			//
+			hex_field->point[row][col].bg = bg;
+		}
+	}
+}
