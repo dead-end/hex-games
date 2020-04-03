@@ -62,6 +62,10 @@ static void space_init_colors() {
 	colors_normal[1] = col_color_create(80, 80, 80);
 	colors_normal[2] = col_color_create(110, 110, 110);
 
+	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
+	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
+	cp_color_pair_add(COLOR_WHITE, colors_normal[2]);
+
 	//
 	// The shadings of the color for the selected state
 	//
@@ -69,23 +73,10 @@ static void space_init_colors() {
 	colors_select[1] = col_color_create(380, 180, 180);
 	colors_select[2] = col_color_create(410, 210, 210);
 
-	//
-	// Define the color pairs of the space
-	//
-	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
-	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
-	cp_color_pair_add(COLOR_WHITE, colors_normal[2]);
-
 	cp_color_pair_add(COLOR_WHITE, colors_select[0]);
 	cp_color_pair_add(COLOR_WHITE, colors_select[1]);
 	cp_color_pair_add(COLOR_WHITE, colors_select[2]);
 }
-
-/******************************************************************************
- * The macro definition to get the shading of the background color.
- *****************************************************************************/
-
-#define space_get_bg_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
 
 /******************************************************************************
  * The function returns the background color of the space. This depends on the
@@ -99,7 +90,7 @@ static short space_get_bg_color(const int row, const int col, const e_state stat
 	//
 	// Get the index of the shading (0, 1, 2)
 	//
-	const int idx = space_get_bg_color_idx(row, col);
+	const int idx = hex_field_color_idx(row, col);
 
 	if (state == STATE_NORMAL) {
 		result = colors_normal[idx];
@@ -281,6 +272,13 @@ void space_get_hex_field(const s_point *hex_idx, const e_state state, s_hex_fiel
 
 	for (int row = 0; row < HEX_SIZE; row++) {
 		for (int col = 0; col < HEX_SIZE; col++) {
+
+			//
+			// Ignore the corners of the hex field
+			//
+			if (hex_field_is_corner(row, col)) {
+				continue;
+			}
 
 			space_field->point[row][col].chr = space_tmpl->point[row][col].chr;
 			space_field->point[row][col].fg = space_tmpl->point[row][col].fg;
