@@ -37,7 +37,7 @@
  * foreground and background color.
  *****************************************************************************/
 
-typedef struct s_hex_point {
+typedef struct {
 
 	wchar_t *chr;
 
@@ -51,7 +51,7 @@ typedef struct s_hex_point {
  * The struct is the base of the space. It is a 4x4 array of s_hex_points.
  *****************************************************************************/
 
-typedef struct s_hex_field {
+typedef struct {
 
 	s_hex_point point[HEX_SIZE][HEX_SIZE];
 
