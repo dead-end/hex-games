@@ -72,11 +72,38 @@ void obj_area_free() {
  *****************************************************************************/
 
 static void obj_area_init_empty(s_object **obj_area) {
+	s_point idx, neighbour;
+	s_object *object;
 
-	for (int row = 0; row < _dim_space.row; row++) {
-		for (int col = 0; col < _dim_space.col; col++) {
+	for (idx.row = 0; idx.row < _dim_space.row; idx.row++) {
+		for (idx.col = 0; idx.col < _dim_space.col; idx.col++) {
 
-			obj_area[row][col].obj = OBJ_NONE;
+			object = &obj_area[idx.row][idx.col];
+
+			//
+			// The object type is none
+			//
+			object->obj = OBJ_NONE;
+
+			//
+			// Iterate over the directions to find the neighbours.
+			//
+			for (int dir = 0; dir < 6; dir++) {
+
+				//
+				// Get the neighbour in that direction.
+				//
+				obj_area_goto(&idx, dir, &neighbour);
+
+				//
+				// Ensure that the neighbour is valid.
+				//
+				if (s_point_inside(&_dim_space, &neighbour)) {
+					object->neighbour[dir] = &obj_area[neighbour.row][neighbour.col];
+				} else {
+					object->neighbour[dir] = NULL;
+				}
+			}
 		}
 	}
 }
@@ -155,13 +182,13 @@ void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
  * printed. There are valid cases where the ship is not moved. In this case the
  * function returns false, otherwise true.
  *****************************************************************************/
-
+// TODO: use neighbours
 bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir dir) {
 
 	//
 	// Ensure that the target is inside the borders.
 	//
-	if (!s_point_inside(&_dim_space, point_to) {
+	if (!s_point_inside(&_dim_space, point_to)) {
 		log_debug("Target outside: %d/%d", point_to->row, point_to->col);
 		return false;
 	}

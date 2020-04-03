@@ -41,7 +41,9 @@ typedef enum {
  * The struct defines that possible obejct types.
  *****************************************************************************/
 
-typedef struct {
+typedef struct s_object s_object;
+
+struct s_object {
 
 	//
 	// The type of the object.
@@ -55,7 +57,8 @@ typedef struct {
 		s_ship_inst *ship_inst;
 	};
 
-} s_object;
+	s_object *neighbour[6];
+};
 
 /******************************************************************************
  * Macros to access the object area.
