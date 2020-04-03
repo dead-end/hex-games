@@ -85,6 +85,8 @@ static void obj_area_init_empty(s_object **obj_area) {
 			//
 			object->obj = OBJ_NONE;
 
+			object->marker = NULL;
+
 			//
 			// Iterate over the directions to find the neighbours.
 			//
