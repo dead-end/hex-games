@@ -71,6 +71,11 @@ typedef struct {
 
 #define hex_point_set_undef(h) (h).chr = W_NULL; (h).fg = COLOR_UNDEF; (h).bg = COLOR_UNDEF
 
+//
+// The macro definition to get the shading of the background color.
+//
+#define hex_field_color_idx(r,c) ((r) + 2 * ((c) % 2)) % 3
+
 /******************************************************************************
  * The function definitions.
  *****************************************************************************/
