@@ -81,7 +81,7 @@ typedef struct s_point {
 
 #define s_point_same(t,f) (((t)->row == (f)->row) && ((t)->col == (f)->col))
 
-#define s_point_inside(b,p) (0 <= (p)->row && (p)->row < (b)->row && 0 <= (p)->col && (p)->col < (b)->col))
+#define s_point_inside(b,p) (0 <= (p)->row && (p)->row < (b)->row && 0 <= (p)->col && (p)->col < (b)->col)
 
 // TODO:
 #define W_EMPTY L" "
