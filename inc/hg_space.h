@@ -29,17 +29,6 @@
 #include "hg_hex.h"
 
 /******************************************************************************
- * The definition of the states of a hex field. This is the space / background
- * hex field.
- *****************************************************************************/
-
-typedef enum e_state {
-
-	STATE_NORMAL = 0, STATE_SELECT = 1
-
-} e_state;
-
-/******************************************************************************
  * Macro definitions.
  *****************************************************************************/
 
@@ -53,6 +42,6 @@ void space_init(const s_point *dim_hex);
 
 void space_free();
 
-void space_get_hex_field(const s_point *hex_idx, const e_state state, s_hex_field *space_field);
+void space_get_hex_field(const s_point *hex_idx, const int color_idx, const bool highlight, s_hex_field *space_field);
 
 #endif /* INC_HG_SPACE_H_ */
