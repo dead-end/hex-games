@@ -44,9 +44,9 @@ static s_hex_field **_space;
 
 #define NUM_SHADES 3
 
-short colors_normal[NUM_SHADES];
+static short _space_clr_normal[NUM_SHADES];
 
-short colors_select[NUM_SHADES];
+static short _space_clr_highlight[NUM_SHADES];
 
 /******************************************************************************
  * The function initializes the colors.
@@ -58,53 +58,24 @@ static void space_init_colors() {
 	//
 	// The shadings of the color for the normal state
 	//
-	colors_normal[0] = col_color_create(50, 50, 50);
-	colors_normal[1] = col_color_create(80, 80, 80);
-	colors_normal[2] = col_color_create(110, 110, 110);
+	_space_clr_normal[0] = col_color_create(50, 50, 50);
+	_space_clr_normal[1] = col_color_create(80, 80, 80);
+	_space_clr_normal[2] = col_color_create(110, 110, 110);
 
-	cp_color_pair_add(COLOR_WHITE, colors_normal[0]);
-	cp_color_pair_add(COLOR_WHITE, colors_normal[1]);
-	cp_color_pair_add(COLOR_WHITE, colors_normal[2]);
-
-	//
-	// The shadings of the color for the selected state
-	//
-	colors_select[0] = col_color_create(350, 150, 150);
-	colors_select[1] = col_color_create(380, 180, 180);
-	colors_select[2] = col_color_create(410, 210, 210);
-
-	cp_color_pair_add(COLOR_WHITE, colors_select[0]);
-	cp_color_pair_add(COLOR_WHITE, colors_select[1]);
-	cp_color_pair_add(COLOR_WHITE, colors_select[2]);
-}
-
-/******************************************************************************
- * The function returns the background color of the space. This depends on the
- * state of the hex field and the row / col index, which defines the shading of
- * the requested color.
- *****************************************************************************/
-
-static short space_get_bg_color(const int row, const int col, const e_state state) {
-	short result;
+	cp_color_pair_add(COLOR_WHITE, _space_clr_normal[0]);
+	cp_color_pair_add(COLOR_WHITE, _space_clr_normal[1]);
+	cp_color_pair_add(COLOR_WHITE, _space_clr_normal[2]);
 
 	//
-	// Get the index of the shading (0, 1, 2)
+	// The shadings of the color for the highlighted state
 	//
-	const int idx = hex_field_color_idx(row, col);
+	_space_clr_highlight[0] = col_color_create(350, 150, 150);
+	_space_clr_highlight[1] = col_color_create(380, 180, 180);
+	_space_clr_highlight[2] = col_color_create(410, 210, 210);
 
-	if (state == STATE_NORMAL) {
-		result = colors_normal[idx];
-
-	} else if (state == STATE_SELECT) {
-		result = colors_select[idx];
-
-	} else {
-		log_exit("Unknown state: %d", state);
-	}
-
-	log_debug("state: %d pos: %d/%d idx: %d result: %d", state, row, col, idx, result);
-
-	return result;
+	cp_color_pair_add(COLOR_WHITE, _space_clr_highlight[0]);
+	cp_color_pair_add(COLOR_WHITE, _space_clr_highlight[1]);
+	cp_color_pair_add(COLOR_WHITE, _space_clr_highlight[2]);
 }
 
 /******************************************************************************
@@ -247,7 +218,7 @@ void space_init(const s_point *dim_hex) {
  * depending on the state of the space hex field.
  *****************************************************************************/
 
-void space_get_hex_field(const s_point *hex_idx, const e_state state, s_hex_field *space_field) {
+void space_get_hex_field(const s_point *hex_idx, const int color_idx, const bool highlight, s_hex_field *space_field) {
 
 #ifdef DEBUG
 
@@ -265,10 +236,10 @@ void space_get_hex_field(const s_point *hex_idx, const e_state state, s_hex_fiel
 	const s_hex_field *space_tmpl = &_space[hex_idx->row][hex_idx->col];
 
 	//
-	// The background color, which depends on the state of the space hex field
-	// as well as the shading.
+	//	 The background color, which depends on the state of the space hex field
+	//	 as well as the shading.
 	//
-	const short color_space_bg = space_get_bg_color(hex_idx->row, hex_idx->col, state);
+	const short color_space_bg = highlight ? _space_clr_highlight[color_idx] : _space_clr_normal[color_idx];
 
 	for (int row = 0; row < HEX_SIZE; row++) {
 		for (int col = 0; col < HEX_SIZE; col++) {
