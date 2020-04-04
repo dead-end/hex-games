@@ -34,9 +34,9 @@
 
 #define NUM_SHADES 3
 
-short _mkr_clr_normal[NUM_SHADES];
+static short _mkr_clr_normal[NUM_SHADES];
 
-short _mkr_clr_highlight[NUM_SHADES];
+static short _mkr_clr_highlight[NUM_SHADES];
 
 /******************************************************************************
  * The definition of arrow characters for the move markers.
@@ -49,7 +49,7 @@ short _mkr_clr_highlight[NUM_SHADES];
 #define MV_SW L"\x2B0B"
 #define MV_NW L"\x2B09"
 
-wchar_t *_arrow[6];
+static wchar_t *_arrow[6];
 
 /******************************************************************************
  * The function initializes the colors.
