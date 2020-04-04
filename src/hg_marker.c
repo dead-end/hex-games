@@ -35,21 +35,23 @@ s_marker _marker[MKR_MAX];
 int _num_used = 0;
 
 /******************************************************************************
- * The definition of arrow characters for the move markers.
+ * The initialization function calls the initialization functions for the
+ * concrete markers.
  *****************************************************************************/
 
-#define MV_NN L"\x2B06"
-#define MV_NE L"\x2B08"
-#define MV_SE L"\x2B0A"
-#define MV_SS L"\x2B07"
-#define MV_SW L"\x2B0B"
-#define MV_NW L"\x2B09"
+void s_marker_init() {
+	log_debug_str("Initialize the markers!");
+
+	s_marker_move_init();
+}
 
 /******************************************************************************
- * The function returns a marker instance for a given direction.
+ * The function gets a marker from the marker array. There is no allocation
+ * involved, but the name implies: "It is yours. Do whatever you want!" which
+ * is true.
  *****************************************************************************/
 
-s_marker* s_marker_get_move(const e_dir dir) {
+s_marker* s_marker_allocate(const e_marker type) {
 
 	//
 	// Ensure that there is an unused marker struct.
@@ -60,38 +62,41 @@ s_marker* s_marker_get_move(const e_dir dir) {
 
 	s_marker *marker = &_marker[_num_used++];
 
-	marker->type = MRK_TYPE_MOVE;
+	marker->type = type;
 
-	switch (dir) {
+	return marker;
+}
 
-	case DIR_NN:
-		marker->chr = MV_NN;
-		break;
+/******************************************************************************
+ * The function adds the marker to the hex field. This is done by delegating
+ * the call to the specific function.
+ *****************************************************************************/
 
-	case DIR_NE:
-		marker->chr = MV_NE;
-		break;
+void s_marker_add_to_field(const s_marker *marker, const s_point *idx, s_hex_field *hex_field, const bool highlight) {
 
-	case DIR_SE:
-		marker->chr = MV_SE;
-		break;
+	//
+	// If the field has no marker, there is nothing to do.
+	//
+	if (marker == NULL) {
+		return;
+	}
 
-	case DIR_SS:
-		marker->chr = MV_SS;
-		break;
+	//
+	// The markers all have a background color, so we need the color index.
+	//
+	const int color_idx = hex_field_color_idx(idx->row, idx->col);
 
-	case DIR_SW:
-		marker->chr = MV_SW;
-		break;
+	//
+	// Select the marker type and delegate the call.
+	//
+	switch (marker->type) {
 
-	case DIR_NW:
-		marker->chr = MV_NW;
+	case MRK_TYPE_MOVE:
+		s_marker_move_to_field(&marker->marker_move, color_idx, hex_field, highlight);
 		break;
 
 	default:
-		log_exit("Unknown dir: %d", dir)
+		log_exit("Unknown marker type: %d", marker->type)
 		;
 	}
-
-	return marker;
 }

@@ -25,8 +25,10 @@
 #ifndef INC_HG_MARKER_H_
 #define INC_HG_MARKER_H_
 
+#include "hg_marker_move.h"
 #include "hg_common.h"
 #include "hg_dir.h"
+#include "hg_hex.h"
 
 /******************************************************************************
  * The enum defines the possible marker types.
@@ -39,14 +41,20 @@ typedef enum {
 } e_marker;
 
 /******************************************************************************
- * The marker has a type and an optional wchar_t character.
+ * The marker has a type and a pointer to the concrete marker.
  *****************************************************************************/
 
 typedef struct {
 
 	e_marker type;
 
-	wchar_t *chr;
+	//
+	// The union is not a union of pointers.
+	// TODO: Check if this is OK.
+	//
+	union {
+		s_marker_move marker_move;
+	};
 
 } s_marker;
 
@@ -54,6 +62,10 @@ typedef struct {
  * The function definitions.
  *****************************************************************************/
 
-s_marker* s_marker_get_move(const e_dir dir);
+void s_marker_init();
+
+s_marker* s_marker_allocate(const e_marker type);
+
+void s_marker_add_to_field(const s_marker *marker, const s_point *idx, s_hex_field *hex_field, const bool highlight);
 
 #endif /* INC_HG_MARKER_H_ */
