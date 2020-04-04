@@ -34,9 +34,9 @@
 
 #define NUM_SHADES 3
 
-short _colors_normal[NUM_SHADES];
+short _mkr_clr_normal[NUM_SHADES];
 
-short _colors_highlight[NUM_SHADES];
+short _mkr_clr_highlight[NUM_SHADES];
 
 /******************************************************************************
  * The definition of arrow characters for the move markers.
@@ -71,24 +71,24 @@ void s_marker_move_init() {
 	//
 	// The shadings of the color for the normal state
 	//
-	_colors_normal[0] = col_color_create(150, 250, 150);
-	_colors_normal[1] = col_color_create(180, 280, 180);
-	_colors_normal[2] = col_color_create(210, 310, 210);
+	_mkr_clr_normal[0] = col_color_create(150, 250, 150);
+	_mkr_clr_normal[1] = col_color_create(180, 280, 180);
+	_mkr_clr_normal[2] = col_color_create(210, 310, 210);
 
-	cp_color_pair_add(COLOR_YELLOW, _colors_normal[0]);
-	cp_color_pair_add(COLOR_YELLOW, _colors_normal[1]);
-	cp_color_pair_add(COLOR_YELLOW, _colors_normal[2]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[0]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[1]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[2]);
 
 	//
 	// The shadings of the color for the highlighted state
 	//
-	_colors_highlight[0] = col_color_create(150, 450, 150);
-	_colors_highlight[1] = col_color_create(180, 480, 180);
-	_colors_highlight[2] = col_color_create(210, 510, 210);
+	_mkr_clr_highlight[0] = col_color_create(150, 450, 150);
+	_mkr_clr_highlight[1] = col_color_create(180, 480, 180);
+	_mkr_clr_highlight[2] = col_color_create(210, 510, 210);
 
-	cp_color_pair_add(COLOR_YELLOW, _colors_highlight[0]);
-	cp_color_pair_add(COLOR_YELLOW, _colors_highlight[1]);
-	cp_color_pair_add(COLOR_YELLOW, _colors_highlight[2]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[0]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[1]);
+	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[2]);
 
 	log_debug_str("Initialization done!");
 }
@@ -103,7 +103,7 @@ void s_marker_move_to_field(const s_marker_move *marker, const int color_idx, s_
 	//
 	// Get the background color including the background shading and highlighting.
 	//
-	const short bg = highlight ? _colors_highlight[color_idx] : _colors_normal[color_idx];
+	const short bg = highlight ? _mkr_clr_highlight[color_idx] : _mkr_clr_normal[color_idx];
 
 	//
 	// Set the background for the move marker
