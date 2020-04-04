@@ -37,6 +37,7 @@
 
 #include "hg_ship.h"
 #include "hg_obj_area.h"
+#include "hg_marker.h"
 
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
@@ -96,6 +97,8 @@ static void print_object(const s_point *hex_idx, const e_state state) {
 
 		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
 
+		s_marker_add_to_field(obj->marker, hex_idx, &hf_tmp_bg, (state == STATE_SELECT));
+
 		hex_field_print(stdscr, hex_idx, NULL, &hf_tmp_bg);
 		break;
 
@@ -103,8 +106,11 @@ static void print_object(const s_point *hex_idx, const e_state state) {
 
 		log_debug("ship: %d/%d", hex_idx->row, hex_idx->col);
 
-		ship_get_hex_field(obj->ship_inst->ship_type, obj->ship_inst->dir, &hf_tmp_fg);
 		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
+
+		s_marker_add_to_field(obj->marker, hex_idx, &hf_tmp_bg, (state == STATE_SELECT));
+
+		ship_get_hex_field(obj->ship_inst->ship_type, obj->ship_inst->dir, &hf_tmp_fg);
 
 		hex_field_print(stdscr, hex_idx, &hf_tmp_fg, &hf_tmp_bg);
 		break;
@@ -164,10 +170,30 @@ int main() {
 
 	ship_field_init();
 
+	s_marker_init();
+
 	s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
 
 	s_point ship_point = { .row = 2, .col = 2 };
 	set_ship(ship_point.row, ship_point.col, &ship_inst[0], DIR_NN, ship_type_normal);
+
+	s_marker *marker;
+
+	marker = s_marker_allocate(MRK_TYPE_MOVE);
+	s_marker_move_set(&marker->marker_move, DIR_NW);
+	obj_area_add_marker(1, 1, marker);
+
+	marker = s_marker_allocate(MRK_TYPE_MOVE);
+	s_marker_move_set(&marker->marker_move, DIR_NN);
+	obj_area_add_marker(1, 2, marker);
+
+	marker = s_marker_allocate(MRK_TYPE_MOVE);
+	s_marker_move_set(&marker->marker_move, DIR_NE);
+	obj_area_add_marker(1, 3, marker);
+
+	marker = s_marker_allocate(MRK_TYPE_MOVE);
+	s_marker_move_set(&marker->marker_move, DIR_UNDEF);
+	obj_area_add_marker(2, 2, marker);
 
 	print_objects(&hex_max);
 
@@ -192,7 +218,13 @@ int main() {
 
 			if (event.bstate & BUTTON1_PRESSED) {
 
-				if (obj_area_mv_ship(&ship_point, &hex_idx, DIR_NN)) {
+				s_object *obj = obj_area_get(hex_idx.row, hex_idx.col);
+
+				if (obj->marker == NULL || obj->marker->type != MRK_TYPE_MOVE || obj->marker->marker_move.dir == DIR_UNDEF) {
+					continue;
+				}
+
+				if (obj_area_mv_ship(&ship_point, &hex_idx, obj->marker->marker_move.dir)) {
 					print_object(&ship_point, STATE_NORMAL);
 					print_object(&hex_idx, STATE_NORMAL);
 					s_point_copy(&ship_point, &hex_idx);
