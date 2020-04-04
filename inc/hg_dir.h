@@ -26,16 +26,26 @@
 #define INC_HG_DIR_H_
 
 /******************************************************************************
- * The definition of the 6 directions of a hex field.
+ * The definition of the 6 directions of a hex field which will be used as an
+ * array index.
  *****************************************************************************/
 
 #define DIR_NUM 6
 
 typedef enum dir {
 
-	DIR_NN, DIR_NE, DIR_SE, DIR_SS, DIR_SW, DIR_NW
+	DIR_UNDEF = -1,
+
+	DIR_NN = 0,
+	DIR_NE = 1,
+	DIR_SE = 2,
+	DIR_SS = 3,
+	DIR_SW = 4,
+	DIR_NW = 5
 
 } e_dir;
+
+#define DIR_STR_UNDEF "DIR-UNDEF"
 
 #define DIR_STR_NN "DIR-NN"
 #define DIR_STR_NE "DIR-NE"

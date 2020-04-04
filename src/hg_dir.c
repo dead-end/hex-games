@@ -33,6 +33,9 @@ char* e_dir_str(const e_dir dir) {
 
 	switch (dir) {
 
+	case DIR_UNDEF:
+		return DIR_STR_UNDEF;
+
 	case DIR_NN:
 		return DIR_STR_NN;
 
