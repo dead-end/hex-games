@@ -30,9 +30,9 @@
 
 #define MKR_MAX 32
 
-s_marker _marker[MKR_MAX];
+static s_marker _marker[MKR_MAX];
 
-int _num_used = 0;
+static int _num_used = 0;
 
 /******************************************************************************
  * The initialization function calls the initialization functions for the
@@ -72,7 +72,7 @@ s_marker* s_marker_allocate(const e_marker type) {
  * the call to the specific function.
  *****************************************************************************/
 
-void s_marker_add_to_field(const s_marker *marker, const s_point *idx, s_hex_field *hex_field, const bool highlight) {
+void s_marker_add_to_field(const s_marker *marker, const int color_idx, const bool highlight, s_hex_field *hex_field) {
 
 	//
 	// If the field has no marker, there is nothing to do.
@@ -80,11 +80,6 @@ void s_marker_add_to_field(const s_marker *marker, const s_point *idx, s_hex_fie
 	if (marker == NULL) {
 		return;
 	}
-
-	//
-	// The markers all have a background color, so we need the color index.
-	//
-	const int color_idx = hex_field_color_idx(idx->row, idx->col);
 
 	//
 	// Select the marker type and delegate the call.

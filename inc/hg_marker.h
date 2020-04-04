@@ -66,6 +66,6 @@ void s_marker_init();
 
 s_marker* s_marker_allocate(const e_marker type);
 
-void s_marker_add_to_field(const s_marker *marker, const s_point *idx, s_hex_field *hex_field, const bool highlight);
+void s_marker_add_to_field(const s_marker *marker, const int color_idx, const bool highlight, s_hex_field *hex_field);
 
 #endif /* INC_HG_MARKER_H_ */
