@@ -84,10 +84,15 @@ static void hg_init() {
  *
  *****************************************************************************/
 
-static void print_object(const s_point *hex_idx, const e_state state) {
+static void print_object(const s_point *hex_idx, const bool highlight) {
 	s_hex_field hf_tmp_bg, hf_tmp_fg;
 
 	const s_object *obj = obj_area_get(hex_idx->row, hex_idx->col);
+
+	//
+	// Get the index of the shading (0, 1, 2)
+	//
+	const int color_idx = hex_field_color_idx(hex_idx->row, hex_idx->col);
 
 	switch (obj->obj) {
 
@@ -95,9 +100,9 @@ static void print_object(const s_point *hex_idx, const e_state state) {
 
 		log_debug("space: %d/%d", hex_idx->row, hex_idx->col);
 
-		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
+		space_get_hex_field(hex_idx, color_idx, highlight, &hf_tmp_bg);
 
-		s_marker_add_to_field(obj->marker, hex_idx, &hf_tmp_bg, (state == STATE_SELECT));
+		s_marker_add_to_field(obj->marker, color_idx, highlight, &hf_tmp_bg);
 
 		hex_field_print(stdscr, hex_idx, NULL, &hf_tmp_bg);
 		break;
@@ -106,9 +111,9 @@ static void print_object(const s_point *hex_idx, const e_state state) {
 
 		log_debug("ship: %d/%d", hex_idx->row, hex_idx->col);
 
-		space_get_hex_field(hex_idx, state, &hf_tmp_bg);
+		space_get_hex_field(hex_idx, color_idx, highlight, &hf_tmp_bg);
 
-		s_marker_add_to_field(obj->marker, hex_idx, &hf_tmp_bg, (state == STATE_SELECT));
+		s_marker_add_to_field(obj->marker, color_idx, highlight, &hf_tmp_bg);
 
 		ship_get_hex_field(obj->ship_inst->ship_type, obj->ship_inst->dir, &hf_tmp_fg);
 
@@ -133,7 +138,7 @@ static void print_objects(const s_point *hex_dim) {
 	for (hex_idx.row = 0; hex_idx.row < hex_dim->row; hex_idx.row++) {
 		for (hex_idx.col = 0; hex_idx.col < hex_dim->col; hex_idx.col++) {
 
-			print_object(&hex_idx, STATE_NORMAL);
+			print_object(&hex_idx, false);
 		}
 	}
 }
@@ -218,6 +223,10 @@ int main() {
 
 			if (event.bstate & BUTTON1_PRESSED) {
 
+				if (!s_point_inside(&hex_max, &hex_idx)) {
+					continue;
+				}
+
 				s_object *obj = obj_area_get(hex_idx.row, hex_idx.col);
 
 				if (obj->marker == NULL || obj->marker->type != MRK_TYPE_MOVE || obj->marker->marker_move.dir == DIR_UNDEF) {
@@ -225,8 +234,8 @@ int main() {
 				}
 
 				if (obj_area_mv_ship(&ship_point, &hex_idx, obj->marker->marker_move.dir)) {
-					print_object(&ship_point, STATE_NORMAL);
-					print_object(&hex_idx, STATE_NORMAL);
+					print_object(&ship_point, false);
+					print_object(&hex_idx, false);
 					s_point_copy(&ship_point, &hex_idx);
 				}
 				continue;
@@ -238,14 +247,14 @@ int main() {
 				// Delete old
 				//
 				if (hex_idx_old.row >= 0 && hex_idx_old.col >= 0) {
-					print_object(&hex_idx_old, STATE_NORMAL);
+					print_object(&hex_idx_old, false);
 				}
 
 				//
 				// Print new
 				//
 				if (hex_idx.row >= 0 && hex_idx.col >= 0) {
-					print_object(&hex_idx, STATE_SELECT);
+					print_object(&hex_idx, true);
 				}
 
 				s_point_copy(&hex_idx_old, &hex_idx);
