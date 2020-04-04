@@ -54,14 +54,14 @@
  * The definition of the ship templates.
  *****************************************************************************/
 
-s_hex_field _ship_field_templ[DIR_NUM];
+static s_hex_field _ship_field_templ[DIR_NUM];
 
 /******************************************************************************
  * The function initializes the ship types. Currently we have only one ship
  * type and initializing means allocating colors.
  *****************************************************************************/
 
-s_ship_type _ship_type[1];
+static s_ship_type _ship_type[1];
 
 static void ship_type_init() {
 
