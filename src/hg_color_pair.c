@@ -54,7 +54,7 @@ static s_color_pair _cp_array[CP_MAX];
 //
 #define CP_START 8
 
-bool _is_sorted = false;
+static bool _is_sorted = false;
 
 /*******************************************************************************
  * The macro logs the given color pair.
