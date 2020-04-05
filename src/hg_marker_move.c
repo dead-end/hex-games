@@ -28,6 +28,16 @@
 #include "hg_marker_move.h"
 
 /******************************************************************************
+ * The definition of the marker array.
+ *****************************************************************************/
+
+#define MKR_MAX 32
+
+static s_marker_move _mkr_mv_array[MKR_MAX];
+
+static int _mkr_mv_num_used = 0;
+
+/******************************************************************************
  * The definition of the move marker colors. We have 3 colors for the shading
  * and a normal and highlighted color.
  *****************************************************************************/
@@ -37,6 +47,8 @@
 static short _mkr_clr_normal[NUM_SHADES];
 
 static short _mkr_clr_highlight[NUM_SHADES];
+
+static short _mkr_clr_fg;
 
 /******************************************************************************
  * The definition of arrow characters for the move markers.
@@ -52,21 +64,31 @@ static short _mkr_clr_highlight[NUM_SHADES];
 static wchar_t *_arrow[6];
 
 /******************************************************************************
- * The function initializes the colors.
+ * The function initializes the array with the arrows characters.
  *****************************************************************************/
 
-void s_marker_move_init() {
-	log_debug_str("Initialize arrows and colors / color pairs!");
+static void s_marker_move_init_arows() {
+	log_debug_str("Initialize arrows!");
 
-	//
-	// Initialize the arrow characters.
-	//
 	_arrow[DIR_NN] = MV_NN;
 	_arrow[DIR_NE] = MV_NE;
 	_arrow[DIR_SE] = MV_SE;
 	_arrow[DIR_SS] = MV_SS;
 	_arrow[DIR_SW] = MV_SW;
 	_arrow[DIR_NW] = MV_NW;
+}
+
+/******************************************************************************
+ * The function initializes the colors and color pairs.
+ *****************************************************************************/
+
+static void s_marker_move_init_colors() {
+	log_debug_str("Initialize colors / color pairs!");
+
+	//
+	// Set the foreground color.
+	//
+	_mkr_clr_fg = COLOR_YELLOW;
 
 	//
 	// The shadings of the color for the normal state
@@ -75,9 +97,9 @@ void s_marker_move_init() {
 	_mkr_clr_normal[1] = col_color_create(180, 280, 180);
 	_mkr_clr_normal[2] = col_color_create(210, 310, 210);
 
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[0]);
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[1]);
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_normal[2]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_normal[0]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_normal[1]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_normal[2]);
 
 	//
 	// The shadings of the color for the highlighted state
@@ -86,11 +108,48 @@ void s_marker_move_init() {
 	_mkr_clr_highlight[1] = col_color_create(180, 480, 180);
 	_mkr_clr_highlight[2] = col_color_create(210, 510, 210);
 
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[0]);
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[1]);
-	cp_color_pair_add(COLOR_YELLOW, _mkr_clr_highlight[2]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_highlight[0]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_highlight[1]);
+	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_highlight[2]);
+}
 
-	log_debug_str("Initialization done!");
+/******************************************************************************
+ * The function initializes move markers.
+ *****************************************************************************/
+
+void s_marker_move_init() {
+
+	s_marker_move_init_arows();
+
+	s_marker_move_init_colors();
+}
+
+/******************************************************************************
+ * The function returns the next unused s_marker_move instance from the array.
+ *****************************************************************************/
+
+s_marker_move* s_marker_move_get(const e_dir dir) {
+
+	//
+	// Ensure that there is an unused marker struct.
+	//
+	if (_mkr_mv_num_used >= MKR_MAX) {
+		log_exit_str("No more marker left!");
+	}
+
+	s_marker_move *marker_move = &_mkr_mv_array[_mkr_mv_num_used++];
+
+	marker_move->dir = dir;
+
+	return marker_move;
+}
+
+/******************************************************************************
+ * The function resets the array of s_marker_move instances.
+ *****************************************************************************/
+
+void s_marker_move_reset() {
+	_mkr_mv_num_used = 0;
 }
 
 /******************************************************************************
@@ -115,9 +174,9 @@ void s_marker_move_to_field(const s_marker_move *marker, const int color_idx, s_
 	//
 	if (marker->dir != DIR_UNDEF) {
 		hex_field->point[1][1].chr = _arrow[marker->dir];
-		hex_field->point[1][1].fg = COLOR_YELLOW;
+		hex_field->point[1][1].fg = _mkr_clr_fg;
 
 		hex_field->point[2][1].chr = _arrow[marker->dir];
-		hex_field->point[2][1].fg = COLOR_YELLOW;
+		hex_field->point[2][1].fg = _mkr_clr_fg;
 	}
 }
