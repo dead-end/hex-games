@@ -184,20 +184,16 @@ int main() {
 
 	s_marker *marker;
 
-	marker = s_marker_allocate(MRK_TYPE_MOVE);
-	s_marker_move_set(&marker->marker_move, DIR_NW);
+	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NW);
 	obj_area_add_marker(1, 1, marker);
 
-	marker = s_marker_allocate(MRK_TYPE_MOVE);
-	s_marker_move_set(&marker->marker_move, DIR_NN);
+	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NN);
 	obj_area_add_marker(1, 2, marker);
 
-	marker = s_marker_allocate(MRK_TYPE_MOVE);
-	s_marker_move_set(&marker->marker_move, DIR_NE);
+	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NE);
 	obj_area_add_marker(1, 3, marker);
 
-	marker = s_marker_allocate(MRK_TYPE_MOVE);
-	s_marker_move_set(&marker->marker_move, DIR_UNDEF);
+	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_UNDEF);
 	obj_area_add_marker(2, 2, marker);
 
 	print_objects(&hex_max);
@@ -229,11 +225,11 @@ int main() {
 
 				s_object *obj = obj_area_get(hex_idx.row, hex_idx.col);
 
-				if (obj->marker == NULL || obj->marker->type != MRK_TYPE_MOVE || obj->marker->marker_move.dir == DIR_UNDEF) {
+				if (obj->marker == NULL || obj->marker->type != MRK_TYPE_MOVE || obj->marker->marker_move->dir == DIR_UNDEF) {
 					continue;
 				}
 
-				if (obj_area_mv_ship(&ship_point, &hex_idx, obj->marker->marker_move.dir)) {
+				if (obj_area_mv_ship(&ship_point, &hex_idx, obj->marker->marker_move->dir)) {
 					print_object(&ship_point, false);
 					print_object(&hex_idx, false);
 					s_point_copy(&ship_point, &hex_idx);
