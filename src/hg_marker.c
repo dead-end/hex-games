@@ -30,9 +30,9 @@
 
 #define MKR_MAX 32
 
-static s_marker _marker[MKR_MAX];
+static s_marker _mkr_array[MKR_MAX];
 
-static int _num_used = 0;
+static int _mkr_num_used = 0;
 
 /******************************************************************************
  * The initialization function calls the initialization functions for the
@@ -46,25 +46,50 @@ void s_marker_init() {
 }
 
 /******************************************************************************
- * The function gets a marker from the marker array. There is no allocation
- * involved, but the name implies: "It is yours. Do whatever you want!" which
- * is true.
+ * The function gets the next unused marker from the marker array.
  *****************************************************************************/
 
-s_marker* s_marker_allocate(const e_marker type) {
+static s_marker* s_marker_get(const e_marker type) {
 
 	//
 	// Ensure that there is an unused marker struct.
 	//
-	if (_num_used >= MKR_MAX) {
+	if (_mkr_num_used >= MKR_MAX) {
 		log_exit_str("No more marker left!");
 	}
 
-	s_marker *marker = &_marker[_num_used++];
+	s_marker *marker = &_mkr_array[_mkr_num_used++];
 
+	//
+	// Set the marker type
+	//
 	marker->type = type;
 
 	return marker;
+}
+
+/******************************************************************************
+ * The function gets the next unused s_maker and the next unused s_marker_move
+ * and combines them.
+ *****************************************************************************/
+
+s_marker* s_marker_get_move_marker(const e_marker type, const e_dir dir) {
+
+	s_marker *marker = s_marker_get(type);
+
+	marker->marker_move = s_marker_move_get(dir);
+
+	return marker;
+}
+
+/******************************************************************************
+ *The function resets the array of s_marker instances.
+ *****************************************************************************/
+
+void s_marker_reset() {
+	_mkr_num_used = 0;
+
+	s_marker_move_reset();
 }
 
 /******************************************************************************
@@ -87,7 +112,7 @@ void s_marker_add_to_field(const s_marker *marker, const int color_idx, const bo
 	switch (marker->type) {
 
 	case MRK_TYPE_MOVE:
-		s_marker_move_to_field(&marker->marker_move, color_idx, hex_field, highlight);
+		s_marker_move_to_field(marker->marker_move, color_idx, hex_field, highlight);
 		break;
 
 	default:
