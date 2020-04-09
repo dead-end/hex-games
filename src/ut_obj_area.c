@@ -52,7 +52,7 @@ void test_obj_area_goto() {
 	s_point from;
 
 	//
-	// Point with odd coordinates
+	// Point with odd / odd coordinates
 	//
 	s_point_set(&from, 1, 1);
 
@@ -65,7 +65,7 @@ void test_obj_area_goto() {
 	test_hex(&from, DIR_NW, 1, 0);
 
 	//
-	// Point with even coordinates
+	// Point with even / even coordinates
 	//
 	s_point_set(&from, 2, 2);
 
@@ -76,6 +76,32 @@ void test_obj_area_goto() {
 	test_hex(&from, DIR_SS, 3, 2);
 	test_hex(&from, DIR_SW, 2, 1);
 	test_hex(&from, DIR_NW, 1, 1);
+
+	//
+	// Point with even / odd coordinates
+	//
+	s_point_set(&from, 2, 3);
+
+	test_hex(&from, DIR_NN, 1, 3);
+	test_hex(&from, DIR_NE, 2, 4);
+	test_hex(&from, DIR_SE, 3, 4);
+
+	test_hex(&from, DIR_SS, 3, 3);
+	test_hex(&from, DIR_SW, 3, 2);
+	test_hex(&from, DIR_NW, 2, 2);
+
+	//
+	// Point with odd / even coordinates
+	//
+	s_point_set(&from, 3, 2);
+
+	test_hex(&from, DIR_NN, 2, 2);
+	test_hex(&from, DIR_NE, 2, 3);
+	test_hex(&from, DIR_SE, 3, 3);
+
+	test_hex(&from, DIR_SS, 4, 2);
+	test_hex(&from, DIR_SW, 3, 1);
+	test_hex(&from, DIR_NW, 2, 1);
 }
 
 /******************************************************************************
