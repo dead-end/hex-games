@@ -262,6 +262,8 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 #define MV_PATH_CENTER 'c'
 #define MV_PATH_RIGHT  'r'
 
+//TODO: The function returns an object but no direction.
+
 s_object* obj_area_mv_ship_path(s_object *obj_from, char *mv_path) {
 
 	log_debug("Move with path: %s", mv_path);
