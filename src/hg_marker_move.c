@@ -88,14 +88,15 @@ static void s_marker_move_init_colors() {
 	//
 	// Set the foreground color.
 	//
+	// TODO: color of engine ??
 	_mkr_clr_fg = COLOR_YELLOW;
 
 	//
 	// The shadings of the color for the normal state
 	//
-	_mkr_clr_normal[0] = col_color_create(150, 250, 150);
-	_mkr_clr_normal[1] = col_color_create(180, 280, 180);
-	_mkr_clr_normal[2] = col_color_create(210, 310, 210);
+	_mkr_clr_normal[0] = col_color_create(50, 150, 50);
+	_mkr_clr_normal[1] = col_color_create(80, 180, 80);
+	_mkr_clr_normal[2] = col_color_create(110, 210, 110);
 
 	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_normal[0]);
 	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_normal[1]);
@@ -104,9 +105,9 @@ static void s_marker_move_init_colors() {
 	//
 	// The shadings of the color for the highlighted state
 	//
-	_mkr_clr_highlight[0] = col_color_create(150, 450, 150);
-	_mkr_clr_highlight[1] = col_color_create(180, 480, 180);
-	_mkr_clr_highlight[2] = col_color_create(210, 510, 210);
+	_mkr_clr_highlight[0] = col_color_create(50, 250, 50);
+	_mkr_clr_highlight[1] = col_color_create(80, 280, 80);
+	_mkr_clr_highlight[2] = col_color_create(110, 310, 110);
 
 	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_highlight[0]);
 	cp_color_pair_add(_mkr_clr_fg, _mkr_clr_highlight[1]);
