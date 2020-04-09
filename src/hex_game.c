@@ -143,6 +143,27 @@ static void print_objects(const s_point *hex_dim) {
 	}
 }
 
+void reset_marker(const s_point *hex_dim) {
+	log_debug_str("Print objects");
+
+	s_point hex_idx;
+	s_object *object;
+
+	for (hex_idx.row = 0; hex_idx.row < hex_dim->row; hex_idx.row++) {
+		for (hex_idx.col = 0; hex_idx.col < hex_dim->col; hex_idx.col++) {
+
+			object = obj_area_get(hex_idx.row, hex_idx.col);
+
+			if (object->marker != NULL) {
+				object->marker = NULL;
+				print_object(&hex_idx, false);
+			}
+		}
+	}
+
+	s_marker_reset();
+}
+
 /******************************************************************************
  *
  *****************************************************************************/
@@ -152,6 +173,30 @@ static void set_ship(const int row, const int col, s_ship_inst *ship_inst, e_dir
 	s_ship_inst_set(ship_inst, dir, ship_type);
 
 	s_object_set_ship_at(row, col, ship_inst);
+}
+
+static void set_marker(s_object *obj_from) {
+	s_object *obj_to;
+
+	obj_from->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_UNDEF);
+	print_object(&obj_from->pos, true);
+
+	obj_to = obj_area_mv_ship_path(obj_from, "l");
+	if (obj_to != NULL) {
+		log_debug("from: %d/%d to %d/%d", obj_from->pos.row, obj_from->pos.col, obj_to->pos.row, obj_to->pos.col);
+		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_MV_LEFT(obj_from->ship_inst->dir));
+		print_object(&obj_to->pos, false);
+	}
+	obj_to = obj_area_mv_ship_path(obj_from, "c");
+	if (obj_to != NULL) {
+		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, obj_from->ship_inst->dir);
+		print_object(&obj_to->pos, false);
+	}
+	obj_to = obj_area_mv_ship_path(obj_from, "r");
+	if (obj_to != NULL) {
+		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_MV_RIGHT(obj_from->ship_inst->dir));
+		print_object(&obj_to->pos, false);
+	}
 }
 
 /******************************************************************************
@@ -179,22 +224,10 @@ int main() {
 
 	s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
 
-	s_point ship_point = { .row = 2, .col = 2 };
+	s_point ship_point = { .row = 3, .col = 2 };
 	set_ship(ship_point.row, ship_point.col, &ship_inst[0], DIR_NN, ship_type_normal);
 
-	s_marker *marker;
-
-	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NW);
-	obj_area_add_marker(1, 1, marker);
-
-	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NN);
-	obj_area_add_marker(1, 2, marker);
-
-	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_NE);
-	obj_area_add_marker(1, 3, marker);
-
-	marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_UNDEF);
-	obj_area_add_marker(2, 2, marker);
+	set_marker(obj_area_get(ship_point.row, ship_point.col));
 
 	print_objects(&hex_max);
 
@@ -223,17 +256,22 @@ int main() {
 					continue;
 				}
 
-				s_object *obj = obj_area_get(hex_idx.row, hex_idx.col);
+				s_object *obj_to = obj_area_get(hex_idx.row, hex_idx.col);
 
-				if (obj->marker == NULL || obj->marker->type != MRK_TYPE_MOVE || obj->marker->marker_move->dir == DIR_UNDEF) {
+				if (!obj_area_can_mv_to(obj_to)) {
 					continue;
 				}
 
-				if (obj_area_mv_ship(&ship_point, &hex_idx, obj->marker->marker_move->dir)) {
-					print_object(&ship_point, false);
-					print_object(&hex_idx, false);
-					s_point_copy(&ship_point, &hex_idx);
-				}
+				s_object *obj_from = obj_area_get(ship_point.row, ship_point.col);
+
+				obj_area_mv_ship(obj_from, obj_to, obj_to->marker->marker_move->dir);
+				touchwin(stdscr);
+				reset_marker(&hex_max);
+				print_object(&ship_point, false);
+				print_object(&hex_idx, false);
+				set_marker(obj_to);
+				s_point_copy(&ship_point, &hex_idx);
+
 				continue;
 			}
 
