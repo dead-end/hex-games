@@ -54,6 +54,9 @@ typedef enum dir {
 #define DIR_STR_SW "DIR-SW"
 #define DIR_STR_NW "DIR-NW"
 
+#define DIR_MV_LEFT(d)  (((d) + 5) % 6)
+#define DIR_MV_RIGHT(d) (((d) + 1) % 6)
+
 /******************************************************************************
  * The definitions of the functions.
  *****************************************************************************/
