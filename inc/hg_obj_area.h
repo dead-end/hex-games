@@ -34,7 +34,8 @@
 
 typedef enum {
 
-	OBJ_NONE, OBJ_SHIP
+	OBJ_NONE,
+	OBJ_SHIP
 
 } e_object;
 
@@ -45,6 +46,11 @@ typedef enum {
 typedef struct s_object s_object;
 
 struct s_object {
+
+	//
+	// The position of the object. This is necessary for printing.
+	//
+	s_point pos;
 
 	//
 	// The type of the object.
@@ -69,8 +75,6 @@ struct s_object {
 
 extern s_object **_obj_area;
 
-#define s_object_set_ship(o,i) (o)->obj = OBJ_SHIP; (o)->ship_inst = (i)
-
 #define s_object_set_ship_at(r,c,i) _obj_area[r][c].obj = OBJ_SHIP; _obj_area[r][c].ship_inst = (i)
 
 #define obj_area_get(r,c) &_obj_area[r][c]
@@ -87,6 +91,10 @@ void obj_area_free();
 
 void obj_area_goto(const s_point *from, const e_dir dir, s_point *to);
 
-bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir dir);
+bool obj_area_can_mv_to(const s_object *obj_to);
+
+void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir);
+
+s_object* obj_area_mv_ship_path(s_object *obj_from, char *path);
 
 #endif /* INC_HG_OBJ_AREA_H_ */

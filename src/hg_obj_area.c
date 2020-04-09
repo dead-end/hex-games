@@ -80,6 +80,8 @@ static void obj_area_init_empty(s_object **obj_area) {
 
 			object = &obj_area[idx.row][idx.col];
 
+			s_point_set(&object->pos, idx.row, idx.col);
+
 			//
 			// The object type is none
 			//
@@ -149,12 +151,12 @@ void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 		break;
 
 	case DIR_NE:
-		to->row = from->row % 2 == 0 ? from->row - 1 : from->row;
+		to->row = from->row % 2 == 0 ? from->row - 1 + from->col % 2 : from->row - 1 + from->col % 2;
 		to->col = from->col + 1;
 		break;
 
 	case DIR_SE:
-		to->row = from->row % 2 == 0 ? from->row : from->row + 1;
+		to->row = from->row % 2 == 0 ? from->row + from->col % 2 : from->row + from->col % 2;
 		to->col = from->col + 1;
 		break;
 
@@ -164,12 +166,12 @@ void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 		break;
 
 	case DIR_SW:
-		to->row = from->row % 2 == 0 ? from->row : from->row + 1;
+		to->row = from->row % 2 == 0 ? from->row + from->col % 2 : from->row + from->col % 2;
 		to->col = from->col - 1;
 		break;
 
 	case DIR_NW:
-		to->row = from->row % 2 == 0 ? from->row - 1 : from->row;
+		to->row = from->row % 2 == 0 ? from->row - 1 + from->col % 2 : from->row - 1 + from->col % 2;
 		to->col = from->col - 1;
 		break;
 
@@ -180,45 +182,57 @@ void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 }
 
 /******************************************************************************
- * The function moves a ship from one position to an other. The result is not
- * printed. There are valid cases where the ship is not moved. In this case the
- * function returns false, otherwise true.
+ * The function checks if a ship can move to this positions in the object area.
+ * This means the target must have a valid move marker.
  *****************************************************************************/
-// TODO: use neighbours
-bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir dir) {
+
+bool obj_area_can_mv_to(const s_object *obj_to) {
 
 	//
-	// Ensure that the target is inside the borders.
+	// The target needs a marker
 	//
-	if (!s_point_inside(&_dim_space, point_to)) {
-		log_debug("Target outside: %d/%d", point_to->row, point_to->col);
+	if (obj_to->marker == NULL) {
 		return false;
 	}
 
 	//
-	// If the source and the target positions are the same, there is nothing to
-	// do. Turning around at the same position is not allowed.
+	// And the marker has to be a move marker
 	//
-	if (s_point_same(point_from, point_to)) {
-		log_debug("Same points: %d/%d", point_from->row, point_from->col);
+	if (obj_to->marker->type != MRK_TYPE_MOVE) {
 		return false;
 	}
+
+	//
+	// And the direction of the move marker must not be undefined, which means
+	// that this contains the ship to move.
+	//
+	if (obj_to->marker->marker_move->dir == DIR_UNDEF) {
+		return false;
+	}
+
+	return true;
+}
+
+/******************************************************************************
+ * The function moves a ship from one position to an other. The result is not
+ * printed.
+ *****************************************************************************/
+
+void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 
 	//
 	// Get the source and ensure that this is a ship.
 	//
-	s_object *obj_from = obj_area_get(point_from->row, point_from->col);
 	if (obj_from->obj != OBJ_SHIP) {
-		log_exit("Source is not a ship: %d/%d", point_from->row, point_from->col);
+		log_exit("Source is not a ship: %d/%d", obj_from->pos.row, obj_from->pos.col);
 	}
 
 	//
 	// Get the target and ensure that it is empty. (Maybe in future it will be
 	// possible to fly through an asteroid field.)
 	//
-	s_object *obj_to = obj_area_get(point_to->row, point_to->col);
 	if (obj_to->obj != OBJ_NONE) {
-		log_exit("Target is not empty: %d/%d", point_to->row, point_to->col);
+		log_exit("Target is not empty: %d/%d", obj_to->pos.row, obj_to->pos.col);
 	}
 
 	//
@@ -232,9 +246,72 @@ bool obj_area_mv_ship(const s_point *point_from, s_point *point_to, const e_dir 
 	//
 	obj_to->ship_inst = obj_from->ship_inst;
 	obj_to->ship_inst->dir = dir;
+}
+
+/******************************************************************************
+ * The function is used to set move markers for a ship. It is called with the
+ * ship object and a path. The path is a string, where each character
+ * represents a relative direction:
+ *
+ * c: go forward
+ * l: move left and go forward
+ * r: move right and go forward.
+ *****************************************************************************/
+
+#define MV_PATH_LEFT   'l'
+#define MV_PATH_CENTER 'c'
+#define MV_PATH_RIGHT  'r'
+
+s_object* obj_area_mv_ship_path(s_object *obj_from, char *mv_path) {
+
+	log_debug("Move with path: %s", mv_path);
 
 	//
-	// Return true to indicate that the ship was moved.
+	// It is necessary that the object area has a ship at the initial position.
 	//
-	return true;
+	if (obj_from->obj != OBJ_SHIP) {
+		log_exit_str("Object is not a ship!");
+	}
+
+	s_object *obj_to = obj_from;
+	e_dir dir = obj_from->ship_inst->dir;
+
+	//
+	// Move the pointer along the path.
+	//
+	for (char *ptr = mv_path; *ptr != '\0'; ptr++) {
+
+		//
+		// Change the direction (relatively) depending on the path character.
+		//
+		if (*ptr == MV_PATH_LEFT) {
+			dir = DIR_MV_LEFT(dir);
+
+		} else if (*ptr == MV_PATH_RIGHT) {
+			dir = DIR_MV_RIGHT(dir);
+
+		} else if (*ptr != MV_PATH_CENTER) {
+			log_exit("Invalid direction: %d", *ptr);
+		}
+
+		log_debug("char: %c dir:  %d", *ptr, dir);
+
+		//
+		// Go to the neighbor in that direction.
+		//
+		obj_to = obj_to->neighbour[dir];
+
+		//
+		// If the pointer is null, we are outside the object area.
+		//
+		if (obj_to == NULL) {
+			log_debug_str("Object to is null!");
+			return NULL;
+		}
+	}
+
+	//
+	// Return the result object from the area.
+	//
+	return obj_to;
 }
