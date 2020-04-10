@@ -175,27 +175,23 @@ static void set_ship(const int row, const int col, s_ship_inst *ship_inst, e_dir
 	s_object_set_ship_at(row, col, ship_inst);
 }
 
+/******************************************************************************
+ *
+ *****************************************************************************/
+
 static void set_marker(s_object *obj_from) {
 	s_object *obj_to;
 
 	obj_from->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_UNDEF);
 	print_object(&obj_from->pos, true);
 
-	obj_to = obj_area_mv_ship_path(obj_from, "l");
-	if (obj_to != NULL) {
-		log_debug("from: %d/%d to %d/%d", obj_from->pos.row, obj_from->pos.col, obj_to->pos.row, obj_to->pos.col);
-		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_MV_LEFT(obj_from->ship_inst->dir));
-		print_object(&obj_to->pos, false);
-	}
-	obj_to = obj_area_mv_ship_path(obj_from, "c");
-	if (obj_to != NULL) {
-		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, obj_from->ship_inst->dir);
-		print_object(&obj_to->pos, false);
-	}
-	obj_to = obj_area_mv_ship_path(obj_from, "r");
-	if (obj_to != NULL) {
-		obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_MV_RIGHT(obj_from->ship_inst->dir));
-		print_object(&obj_to->pos, false);
+	char *paths[] = { "l", "cl", "c", "cc", "r", "cr", NULL };
+
+	for (int i = 0; paths[i] != NULL; i++) {
+		obj_to = obj_area_set_mv_marker(obj_from, paths[i]);
+		if (obj_to != NULL) {
+			print_object(&obj_to->pos, false);
+		}
 	}
 }
 
@@ -265,7 +261,6 @@ int main() {
 				s_object *obj_from = obj_area_get(ship_point.row, ship_point.col);
 
 				obj_area_mv_ship(obj_from, obj_to, obj_to->marker->marker_move->dir);
-				touchwin(stdscr);
 				reset_marker(&hex_max);
 				print_object(&ship_point, false);
 				print_object(&hex_idx, false);
