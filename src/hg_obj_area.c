@@ -311,6 +311,13 @@ s_object* obj_area_set_mv_marker(s_object *obj_from, char *mv_path) {
 	}
 
 	//
+	// Ensure that we do not overwrite a marker.
+	//
+	if (obj_to->marker != NULL) {
+		log_exit("Object %d/%d already has a marker!", obj_to->pos.row, obj_to->pos.col);
+	}
+
+	//
 	// If the target is not null, we can set the move marker.
 	//
 	obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, dir);
