@@ -262,9 +262,7 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 #define MV_PATH_CENTER 'c'
 #define MV_PATH_RIGHT  'r'
 
-//TODO: The function returns an object but no direction.
-
-s_object* obj_area_mv_ship_path(s_object *obj_from, char *mv_path) {
+s_object* obj_area_set_mv_marker(s_object *obj_from, char *mv_path) {
 
 	log_debug("Move with path: %s", mv_path);
 
@@ -311,6 +309,11 @@ s_object* obj_area_mv_ship_path(s_object *obj_from, char *mv_path) {
 			return NULL;
 		}
 	}
+
+	//
+	// If the target is not null, we can set the move marker.
+	//
+	obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, dir);
 
 	//
 	// Return the result object from the area.
