@@ -44,6 +44,7 @@
  *****************************************************************************/
 
 static void hg_exit_callback() {
+	log_debug_str("Exit callback start!");
 
 	ncur_exit();
 
@@ -167,9 +168,9 @@ void reset_marker(const s_point *hex_dim) {
  *
  *****************************************************************************/
 
-static void set_ship(const int row, const int col, s_ship_inst *ship_inst, e_dir dir, s_ship_type *ship_type) {
+static void set_ship(const int row, const int col, const e_ship_type ship_type, const e_dir dir) {
 
-	s_ship_inst_set(ship_inst, dir, ship_type);
+	s_ship_inst *ship_inst = s_ship_inst_create(ship_type, dir);
 
 	s_object_set_ship_at(row, col, ship_inst);
 }
@@ -214,8 +215,6 @@ static void set_marker(s_object *obj_from) {
  *****************************************************************************/
 
 int main() {
-	s_ship_inst ship_inst[1];
-
 	s_point hex_idx;
 
 	const s_point hex_max = { .row = 5, .col = 12 };
@@ -232,10 +231,11 @@ int main() {
 
 	s_marker_init();
 
-	s_ship_type *ship_type_normal = ship_type_get(SHIP_TYPE_NORMAL);
-
 	s_point ship_point = { .row = 3, .col = 2 };
-	set_ship(ship_point.row, ship_point.col, &ship_inst[0], DIR_NN, ship_type_normal);
+
+	set_ship(ship_point.row, ship_point.col, SHIP_TYPE_NORMAL, DIR_NN);
+
+	set_ship(3, 3, SHIP_TYPE_NORMAL, DIR_NE);
 
 	set_marker(obj_area_get(ship_point.row, ship_point.col));
 
@@ -304,6 +304,8 @@ int main() {
 			}
 		}
 	}
+
+	log_debug_str("End (before cleanup)");
 
 	//
 	// Cleanup is handled with the exit callback.
