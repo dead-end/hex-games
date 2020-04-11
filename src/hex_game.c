@@ -37,7 +37,6 @@
 
 #include "hg_ship.h"
 #include "hg_obj_area.h"
-#include "hg_marker.h"
 
 /******************************************************************************
  * The exit callback function resets the terminal and frees the memory. This is
@@ -182,13 +181,28 @@ static void set_ship(const int row, const int col, s_ship_inst *ship_inst, e_dir
 static void set_marker(s_object *obj_from) {
 	s_object *obj_to;
 
-	obj_from->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, DIR_UNDEF);
+	//
+	// Ensure that the object is a ship.
+	//
+	if (obj_from->obj != OBJ_SHIP) {
+		log_exit("Object is not a ship: %d/%d", obj_from->pos.row, obj_from->pos.col);
+	}
+
+	obj_area_set_mv_marker(obj_from, DIR_UNDEF);
 	print_object(&obj_from->pos, true);
 
-	char *paths[] = { "l", "cl", "c", "cc", "r", "cr", NULL };
+	//
+	// Set the marker along the paths.
+	//
+	char **paths = obj_from->ship_inst->ship_type->paths;
 
 	for (int i = 0; paths[i] != NULL; i++) {
-		obj_to = obj_area_set_mv_marker(obj_from, paths[i]);
+
+		//
+		// Try to set the marker for the path. If it is not possible the
+		// function returns NULL.
+		//
+		obj_to = obj_area_set_mv_marker_path(obj_from, paths[i]);
 		if (obj_to != NULL) {
 			print_object(&obj_to->pos, false);
 		}
