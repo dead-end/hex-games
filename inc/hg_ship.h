@@ -39,17 +39,9 @@ typedef enum {
 } e_ship_type;
 
 /******************************************************************************
- * The struct defines a ship type. Currently the different ship types have
- * different colors.
+ * The definition of a ship type. The different types differ in the colors and
+ * the allowed movements, which are represented by paths.
  *****************************************************************************/
-
-#define ST_UNDEF COLOR_UNDEF
-
-#define ST_ENGINE 0
-#define ST_DARK 1
-#define ST_LIGHT 2
-
-#define PATHS_MAX 16
 
 typedef struct {
 
@@ -84,12 +76,6 @@ typedef struct {
 } s_ship_inst;
 
 /******************************************************************************
- *
- *****************************************************************************/
-
-#define s_ship_inst_set(s,d,t) (s)->dir = (d); (s)->ship_type = (t)
-
-/******************************************************************************
  * Definition of the functions.
  *****************************************************************************/
 
@@ -99,6 +85,6 @@ void ship_field_free();
 
 void ship_get_hex_field(const s_ship_type *ship_type, const e_dir dir, s_hex_field *ship_field);
 
-s_ship_type* ship_type_get(e_ship_type ship_type);
+s_ship_inst* s_ship_inst_create(const e_ship_type ship_type, const e_dir dir);
 
 #endif /* INC_HG_SHIP_H_ */

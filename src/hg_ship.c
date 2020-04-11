@@ -39,11 +39,13 @@
 #define Q_LRLR L"\x2588"
 
 //
-// A block that consists of 4 rectangles. One of them is missing, which is
-// denoted as X.
+// A block consists of 4 rectangles, which build a 2x2 matrix with a left and
+// a right rectangle:
 //
-// LR
-// LR
+//   LR
+//   LR
+//
+// One of them is missing, which is denoted as X.
 //
 #define Q_XRLR L"\x259F"
 #define Q_LXLR L"\x2599"
@@ -51,16 +53,22 @@
 #define Q_LRXR L"\x259C"
 
 /******************************************************************************
+ * The different colors of a ship type.
+ *****************************************************************************/
+
+#define ST_UNDEF COLOR_UNDEF
+
+#define ST_ENGINE 0
+#define ST_DARK 1
+#define ST_LIGHT 2
+
+/******************************************************************************
  * The definition of the paths for the move marker.
  *****************************************************************************/
 
+#define PATHS_MAX 16
+
 static char *_paths_normal[PATHS_MAX] = { "l", "cl", "c", "cc", "r", "cr", NULL };
-
-/******************************************************************************
- * The definition of the ship templates.
- *****************************************************************************/
-
-static s_hex_field _ship_field_templ[DIR_NUM];
 
 /******************************************************************************
  * The function initializes the ship types. Currently we have only one ship
@@ -79,14 +87,10 @@ static void ship_type_init() {
 }
 
 /******************************************************************************
- * The function returns the s_ship_type by its id (which is the enum ship
- * type).
+ * The macro returns the s_ship_type by its id (which is the enum ship type).
  *****************************************************************************/
 
-s_ship_type* ship_type_get(e_ship_type ship_type) {
-
-	return &_ship_type[ship_type];
-}
+#define ship_type_get(e) &_ship_type[ship_type]
 
 /******************************************************************************
  * The macro maps the color from the template to color defined for the ship
@@ -94,6 +98,12 @@ s_ship_type* ship_type_get(e_ship_type ship_type) {
  *****************************************************************************/
 
 #define ship_translate(c,t) ((c) == ST_UNDEF ? ST_UNDEF : (t)->color[c])
+
+/******************************************************************************
+ * The definition of the ship templates.
+ *****************************************************************************/
+
+static s_hex_field _ship_field_templ[DIR_NUM];
 
 /******************************************************************************
  * The function copies the s_hex_field from the template to the given
@@ -130,7 +140,8 @@ void ship_get_hex_field(const s_ship_type *ship_type, const e_dir dir, s_hex_fie
 }
 
 /******************************************************************************
- * The function initializes the ship templates.
+ * The function initializes the ship templates. The template consists of 6 hex
+ * blocks (for each direction).
  *****************************************************************************/
 
 static void ship_field_init_templ() {
@@ -287,4 +298,51 @@ void ship_field_init() {
 	ship_field_init_templ();
 
 	log_debug_str("Ships ready to fly!");
+}
+
+/******************************************************************************
+ * The definition of the array of ship instances that can be used. This means
+ * that the number of ships are fix at the beginning of the game. Currently the
+ * instances cannot be reused.
+ *****************************************************************************/
+
+#define SHIP_INST_MAX 2
+
+static s_ship_inst _ship_inst[SHIP_INST_MAX];
+
+//
+// Number of used ship instances.
+//
+static int _ship_inst_num = 0;
+
+/******************************************************************************
+ * The function creates and initializes a ship instance. The instances are
+ * taken from the array.
+ *****************************************************************************/
+
+s_ship_inst* s_ship_inst_create(const e_ship_type ship_type, const e_dir dir) {
+	s_ship_inst *ship_inst;
+
+	//
+	// Ensure that there is an unused ship instance left.
+	//
+	if (_ship_inst_num >= SHIP_INST_MAX) {
+		log_exit_str("Too many ship instances!");
+	}
+
+	//
+	// Get that instance.
+	//
+	ship_inst = &_ship_inst[_ship_inst_num++];
+
+	//
+	// Set the values.
+	//
+	ship_inst->ship_type = ship_type_get(ship_type);
+	ship_inst->dir = dir;
+
+	//
+	// Return the ship instance.
+	//
+	return ship_inst;
 }
