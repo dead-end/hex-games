@@ -45,22 +45,12 @@ typedef enum dir {
 
 } e_dir;
 
-#define DIR_STR_UNDEF "DIR-UNDEF"
-
-#define DIR_STR_NN "DIR-NN"
-#define DIR_STR_NE "DIR-NE"
-#define DIR_STR_SE "DIR-SE"
-#define DIR_STR_SS "DIR-SS"
-#define DIR_STR_SW "DIR-SW"
-#define DIR_STR_NW "DIR-NW"
-
-#define DIR_MV_LEFT(d)  (((d) + 5) % 6)
-#define DIR_MV_RIGHT(d) (((d) + 1) % 6)
-
 /******************************************************************************
  * The definitions of the functions.
  *****************************************************************************/
 
 char* e_dir_str(const e_dir dir);
+
+e_dir e_dir_mv(e_dir dir, const char chr);
 
 #endif /* INC_HG_DIR_H_ */
