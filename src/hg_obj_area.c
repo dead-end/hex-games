@@ -249,6 +249,45 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 }
 
 /******************************************************************************
+ * The function sets a move marker to an object. The main part is a validation.
+ *****************************************************************************/
+
+s_object* obj_area_set_mv_marker(s_object *obj, const e_dir dir) {
+
+	//
+	// Ensure that we do not overwrite a marker.
+	//
+	if (obj->marker != NULL) {
+		log_exit("Object %d/%d already has a marker!", obj->pos.row, obj->pos.col);
+	}
+
+	//
+	// Ensure that a ship has not a marker with a direction.
+	//
+	if (dir != DIR_UNDEF && obj->obj == OBJ_SHIP) {
+		log_exit("Object is a ship and dir is: %s", e_dir_str(dir));
+
+	}
+
+	//
+	// A marker with no direction is only possible for a ship.
+	//
+	else if (dir == DIR_UNDEF && obj->obj != OBJ_SHIP) {
+		log_exit("Object is a ship and dir is: %s", e_dir_str(dir));
+	}
+
+	//
+	// If the target is not null, we can set the move marker.
+	//
+	obj->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, dir);
+
+	//
+	// Return the result object from the area.
+	//
+	return obj;
+}
+
+/******************************************************************************
  * The function is used to set move markers for a ship. It is called with the
  * ship object and a path. The path is a string, where each character
  * represents a relative direction:
@@ -262,7 +301,7 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 #define MV_PATH_CENTER 'c'
 #define MV_PATH_RIGHT  'r'
 
-s_object* obj_area_set_mv_marker(s_object *obj_from, char *mv_path) {
+s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 
 	log_debug("Move with path: %s", mv_path);
 
@@ -311,19 +350,7 @@ s_object* obj_area_set_mv_marker(s_object *obj_from, char *mv_path) {
 	}
 
 	//
-	// Ensure that we do not overwrite a marker.
-	//
-	if (obj_to->marker != NULL) {
-		log_exit("Object %d/%d already has a marker!", obj_to->pos.row, obj_to->pos.col);
-	}
-
-	//
-	// If the target is not null, we can set the move marker.
-	//
-	obj_to->marker = s_marker_get_move_marker(MRK_TYPE_MOVE, dir);
-
-	//
 	// Return the result object from the area.
 	//
-	return obj_to;
+	return obj_area_set_mv_marker(obj_to, dir);
 }

@@ -95,6 +95,8 @@ bool obj_area_can_mv_to(const s_object *obj_to);
 
 void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir);
 
-s_object* obj_area_set_mv_marker(s_object *obj_from, char *path);
+s_object* obj_area_set_mv_marker(s_object *obj_from, const e_dir);
+
+s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *path);
 
 #endif /* INC_HG_OBJ_AREA_H_ */
