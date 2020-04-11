@@ -51,6 +51,12 @@
 #define Q_LRXR L"\x259C"
 
 /******************************************************************************
+ * The definition of the paths for the move marker.
+ *****************************************************************************/
+
+static char *_paths_normal[PATHS_MAX] = { "l", "cl", "c", "cc", "r", "cr", NULL };
+
+/******************************************************************************
  * The definition of the ship templates.
  *****************************************************************************/
 
@@ -68,6 +74,8 @@ static void ship_type_init() {
 	_ship_type[SHIP_TYPE_NORMAL].color[ST_ENGINE] = col_color_create(900, 800, 0);
 	_ship_type[SHIP_TYPE_NORMAL].color[ST_DARK] = col_color_create(300, 300, 700);
 	_ship_type[SHIP_TYPE_NORMAL].color[ST_LIGHT] = col_color_create(400, 400, 700);
+
+	_ship_type[SHIP_TYPE_NORMAL].paths = _paths_normal;
 }
 
 /******************************************************************************

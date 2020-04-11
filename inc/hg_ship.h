@@ -49,12 +49,19 @@ typedef enum {
 #define ST_DARK 1
 #define ST_LIGHT 2
 
+#define PATHS_MAX 16
+
 typedef struct {
 
 	//
 	// The color definitions of the ship type.
 	//
 	short color[3];
+
+	//
+	// The paths that are used for the move marker.
+	//
+	char **paths;
 
 } s_ship_type;
 
