@@ -86,7 +86,6 @@ static void obj_area_init_empty(s_object **obj_area) {
 			// The object type is none
 			//
 			object->obj = OBJ_NONE;
-
 			object->marker = NULL;
 
 			//
@@ -95,12 +94,12 @@ static void obj_area_init_empty(s_object **obj_area) {
 			for (int dir = 0; dir < 6; dir++) {
 
 				//
-				// Get the neighbour in that direction.
+				// Get the coordinates of the neighbour in that direction.
 				//
 				obj_area_goto(&idx, dir, &neighbour);
 
 				//
-				// Ensure that the neighbour is valid.
+				// Ensure that the neighbour coordiantes are valid.
 				//
 				if (s_point_inside(&_dim_space, &neighbour)) {
 					object->neighbour[dir] = &obj_area[neighbour.row][neighbour.col];
@@ -138,7 +137,7 @@ void obj_area_init(const s_point *dim_hex) {
 
 /******************************************************************************
  * The function is called with a current position and a direction. It updates
- * the "to" point to the adjacent field in the given direction.
+ * the target point to the adjacent field in the given direction.
  *****************************************************************************/
 
 void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
@@ -184,19 +183,23 @@ void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 /******************************************************************************
  * The function checks if a ship can move to this positions in the object area.
  * This means the target must have a valid move marker.
+ *
+ * It is assumed that move markers are only set to valid locations. So checks
+ * whether the target is a valid location for a move marker had taken place
+ * upfront.
  *****************************************************************************/
 
 bool obj_area_can_mv_to(const s_object *obj_to) {
 
 	//
-	// The target needs a marker
+	// The target needs a marker.
 	//
 	if (obj_to->marker == NULL) {
 		return false;
 	}
 
 	//
-	// And the marker has to be a move marker
+	// And the marker has to be a move marker.
 	//
 	if (obj_to->marker->type != MRK_TYPE_MOVE) {
 		return false;
@@ -204,7 +207,7 @@ bool obj_area_can_mv_to(const s_object *obj_to) {
 
 	//
 	// And the direction of the move marker must not be undefined, which means
-	// that this contains the ship to move.
+	// highlighting the position of a ship.
 	//
 	if (obj_to->marker->marker_move->dir == DIR_UNDEF) {
 		return false;
@@ -236,20 +239,29 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir) {
 	}
 
 	//
-	// Update the object type in the source and target.
+	// Copy the ship instance to the target.
 	//
 	obj_to->obj = obj_from->obj;
-	obj_from->obj = OBJ_NONE;
+	obj_to->ship_inst = obj_from->ship_inst;
 
 	//
-	// Move the ship instance and update the direction.
+	// Update the ship direction.
 	//
-	obj_to->ship_inst = obj_from->ship_inst;
 	obj_to->ship_inst->dir = dir;
+
+	//
+	// Remove the ship instance from the source.
+	//
+	obj_from->obj = OBJ_NONE;
+	obj_from->ship_inst = NULL;
 }
 
 /******************************************************************************
- * The function sets a move marker to an object. The main part is a validation.
+ * The function sets a move marker to an object. The main part of the function
+ * is validation. Setting a marker requires that there is no marker.
+ *
+ * You can mark a ship position with a move marker that has no direction or you
+ * can mark an empty object with a move marker that has a direction.
  *****************************************************************************/
 
 s_object* obj_area_set_mv_marker(s_object *obj, const e_dir dir) {
@@ -297,10 +309,6 @@ s_object* obj_area_set_mv_marker(s_object *obj, const e_dir dir) {
  * r: move right and go forward.
  *****************************************************************************/
 
-#define MV_PATH_LEFT   'l'
-#define MV_PATH_CENTER 'c'
-#define MV_PATH_RIGHT  'r'
-
 s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 
 	log_debug("Move with path: %s", mv_path);
@@ -321,19 +329,9 @@ s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 	for (char *ptr = mv_path; *ptr != '\0'; ptr++) {
 
 		//
-		// Change the direction (relatively) depending on the path character.
+		// Update the direction depending on the path character.
 		//
-		if (*ptr == MV_PATH_LEFT) {
-			dir = DIR_MV_LEFT(dir);
-
-		} else if (*ptr == MV_PATH_RIGHT) {
-			dir = DIR_MV_RIGHT(dir);
-
-		} else if (*ptr != MV_PATH_CENTER) {
-			log_exit("Invalid direction: %d", *ptr);
-		}
-
-		log_debug("char: %c dir:  %d", *ptr, dir);
+		dir = e_dir_mv(dir, *ptr);
 
 		//
 		// Go to the neighbor in that direction.
@@ -347,6 +345,15 @@ s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 			log_debug_str("Object to is null!");
 			return NULL;
 		}
+	}
+
+	//
+	// At this point we reached the target position and have to check whether
+	// it is occupied.
+	//
+	if (obj_to->obj != OBJ_NONE) {
+		log_debug("Target is occupied: %d/%d", obj_to->pos.row, obj_to->pos.col);
+		return NULL;
 	}
 
 	//
