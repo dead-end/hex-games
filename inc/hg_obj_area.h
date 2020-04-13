@@ -85,7 +85,7 @@ extern s_object **_obj_area;
  * The definitions of the functions.
  *****************************************************************************/
 
-void obj_area_init(const s_point *dim_hex);
+void obj_area_init(s_point *dim_hex);
 
 void obj_area_free();
 

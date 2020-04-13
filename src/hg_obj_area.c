@@ -115,7 +115,7 @@ static void obj_area_init_empty(s_object **obj_area) {
  * The function initializes the object area.
  *****************************************************************************/
 
-void obj_area_init(const s_point *dim_hex) {
+void obj_area_init(s_point *dim_hex) {
 
 	log_debug_str("Init object area.");
 
