@@ -82,7 +82,7 @@ static void space_init_colors() {
  * The function allocates the array for the space field.
  *****************************************************************************/
 
-static s_hex_field** space_alloc(const s_point *dim) {
+static s_hex_field** space_alloc(s_point *dim) {
 
 	log_debug("Creating space with: %d/%d hex fields", dim->row, dim->col);
 
@@ -174,7 +174,7 @@ static void space_hex_field_init(s_hex_field *hex_field) {
  * represent stars).
  *****************************************************************************/
 
-static void space_hex_fields_init(s_hex_field **space, const s_point *dim) {
+static void space_hex_fields_init(s_hex_field **space, s_point *dim) {
 
 	for (int row = 0; row < dim->row; row++) {
 		for (int col = 0; col < dim->col; col++) {
@@ -187,7 +187,7 @@ static void space_hex_fields_init(s_hex_field **space, const s_point *dim) {
  * The function initializes the background space.
  *****************************************************************************/
 
-void space_init(const s_point *dim_hex) {
+void space_init(s_point *dim_hex) {
 
 	log_debug_str("Init space");
 
