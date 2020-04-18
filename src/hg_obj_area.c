@@ -311,7 +311,7 @@ s_object* obj_area_set_mv_marker(s_object *obj, const e_dir dir) {
 
 s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 
-	log_debug("Move with path: %s", mv_path);
+	log_debug("Object: %d/%d move with path: %s", obj_from->pos.row, obj_from->pos.col, mv_path);
 
 	//
 	// It is necessary that the object area has a ship at the initial position.
