@@ -34,20 +34,22 @@
 
 typedef struct {
 
+	//
+	// The dimension of the viewport
+	//
 	s_point dim;
 
+	//
+	// The position of the viewport
+	//
 	s_point pos;
 
+	//
+	// The dimension of the game
+	//
 	s_point max;
 
 } s_viewport;
-
-/******************************************************************************
- * The extern definition of the viewport, to be able to use it in the folloing
- * macros.
- *****************************************************************************/
-
-extern s_viewport _viewport;
 
 /******************************************************************************
  * Definition of the macros.
@@ -57,12 +59,14 @@ extern s_viewport _viewport;
 
 #define s_viewport_get_abs(v,r,t) (t)->row = (v)->pos.row + (r)->row;  (t)->col = (v)->pos.col + (r)->col
 
-#define s_viewport_get_rel(v,a,t) (t)->row = (v)->pos.row - (a)->row;  (t)->col = (v)->pos.col - (a)->col
+#define s_viewport_get_rel(v,a,t) (t)->row = (a)->row - (v)->pos.row ;  (t)->col = (a)->col- (v)->pos.col
 
 /******************************************************************************
  * Definition of the functions.
  *****************************************************************************/
 
-bool s_viewport_update(const s_point *idx);
+bool s_viewport_inside_viewport(const s_viewport *viewport, const s_point *idx);
+
+bool s_viewport_update(s_viewport *viewport, const s_point *idx);
 
 #endif /* INC_HG_VIEWPORT_H_ */
