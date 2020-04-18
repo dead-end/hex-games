@@ -107,7 +107,7 @@ void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, con
 		s_point_set(hex_idx, -1, -1);
 	}
 
-	log_debug("Event - row %d col: %d hex - row: %d col: %d", win_row, win_col, hex_idx->row, hex_idx->col);
+	log_debug("Event: %d/%d hex: %d/%d", win_row, win_col, hex_idx->row, hex_idx->col);
 }
 
 /******************************************************************************
