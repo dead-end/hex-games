@@ -39,7 +39,7 @@ static void check_hex_get_hex_idx(const int w_row, const int w_col, const int e_
 	//
 	// Get the hex index
 	//
-	hex_get_hex_idx(w_row, w_col, &hex_idx, hex_max);
+	hex_get_hex_idx(w_row, w_col, hex_max, &hex_idx);
 
 	//
 	// Check the row
