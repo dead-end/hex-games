@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #define VERSION "0.1.0"
 
@@ -89,6 +90,11 @@ typedef struct s_point {
 #define W_STAR L"."
 
 #define W_NULL NULL
+
+//
+// Print bool value as a string
+//
+#define bool_str(b) ((b) ? "true" : "false")
 
 void* xmalloc(const size_t size);
 
