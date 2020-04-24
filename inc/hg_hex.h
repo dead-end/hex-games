@@ -76,11 +76,11 @@ typedef struct {
  * The function definitions.
  *****************************************************************************/
 
-void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, const s_point *hex_max);
+void hex_get_hex_idx(const int win_row, const int win_col, const s_point *hex_max, s_point *hex_idx);
 
 void hex_field_set_corners(s_hex_field *hex_field);
 
-void hex_field_print(WINDOW *win, const s_point *pos_ul, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg);
+void hex_field_print(WINDOW *win, const s_point *pos_ul, const s_hex_field *hex_field_fg, const s_hex_field *hex_field_bg);
 
 void hex_field_set_bg(s_hex_field *hex_field, const short bg);
 
