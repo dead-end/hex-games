@@ -55,8 +55,6 @@ typedef struct {
  * Definition of the macros.
  *****************************************************************************/
 
-#define s_viewport_get() &_viewport
-
 #define s_viewport_get_abs(v,r,t) (t)->row = (v)->pos.row + (r)->row;  (t)->col = (v)->pos.col + (r)->col
 
 /******************************************************************************
