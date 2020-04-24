@@ -23,6 +23,7 @@
  */
 
 #include "hg_common.h"
+#include <stdbool.h>
 
 /******************************************************************************
  * The function checks whether an int parameter has the expected value or not.
@@ -62,5 +63,18 @@ void ut_check_s_point(const s_point *cur, const s_point *exp, const char *msg) {
 	}
 
 	log_debug("[%s] OK current: %d/%d", msg, cur->row, cur->col);
+}
+
+/******************************************************************************
+ * The function checks whether a bool parameter has the expected value or not.
+ *****************************************************************************/
+
+void ut_check_bool(const bool cur, const bool exp, const char *msg) {
+
+	if (cur != exp) {
+		log_exit("[%s] current: %s expected: %s", msg, bool_str(cur), bool_str(exp));
+	}
+
+	log_debug("[%s] OK current: %s", msg, bool_str(cur));
 }
 
