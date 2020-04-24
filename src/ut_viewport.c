@@ -26,6 +26,55 @@
 #include "ut_utils.h"
 
 /******************************************************************************
+ * The function check the s_viewport_inside_viewport() function.
+ *****************************************************************************/
+
+static void test_s_viewport_inside_viewport() {
+	bool result;
+
+	s_viewport viewport;
+	s_point idx;
+
+	log_debug_str("Start test");
+
+	s_point_set(&viewport.max, 10, 10);
+	s_point_set(&viewport.dim, 5, 5);
+	s_point_set(&viewport.pos, 2, 2);
+
+	//
+	// idx: 0/0
+	//
+	s_point_set(&idx, 0, 0);
+
+	result = s_viewport_inside_viewport(&viewport, &idx);
+	ut_check_bool(result, false, "idx: 0/0");
+
+	//
+	// idx: 2/2
+	//
+	s_point_set(&idx, 2, 2);
+
+	result = s_viewport_inside_viewport(&viewport, &idx);
+	ut_check_bool(result, true, "idx: 2/2");
+
+	//
+	// idx: 6/6
+	//
+	s_point_set(&idx, 6, 6);
+
+	result = s_viewport_inside_viewport(&viewport, &idx);
+	ut_check_bool(result, true, "idx: 6/6");
+
+	//
+	// idx: 7/7
+	//
+	s_point_set(&idx, 7, 7);
+
+	result = s_viewport_inside_viewport(&viewport, &idx);
+	ut_check_bool(result, false, "idx: 7/7");
+}
+
+/******************************************************************************
  * The function check the s_viewport_get_ul() function.
  *****************************************************************************/
 
@@ -34,6 +83,8 @@ static void test_s_viewport_get_ul() {
 	s_point idx_abs;
 	s_point pos_ul;
 	s_point exp_ul;
+
+	log_debug_str("Start test");
 
 	s_point_set(&viewport.max, 10, 10);
 	s_point_set(&viewport.dim, 5, 5);
@@ -96,4 +147,6 @@ static void test_s_viewport_get_ul() {
 void ut_viewport_exec() {
 
 	test_s_viewport_get_ul();
+
+	test_s_viewport_inside_viewport();
 }
