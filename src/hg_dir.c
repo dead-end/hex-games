@@ -125,7 +125,7 @@ e_dir e_dir_mv(const e_dir dir, const char chr) {
 		;
 	}
 
-	log_debug("char: %c dir:  %d", chr, result);
+	log_debug("char: %c dir-from: %s dir-to: %s", chr, e_dir_str(dir), e_dir_str(result));
 
 	return result;
 }
