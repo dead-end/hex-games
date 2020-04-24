@@ -22,29 +22,9 @@
  * SOFTWARE.
  */
 
-#include <stdlib.h>
+#ifndef INC_UT_VIEWPORT_H_
+#define INC_UT_VIEWPORT_H_
 
-#include "ut_color_pair.h"
-#include "ut_hex.h"
-#include "ut_obj_area.h"
-#include "ut_dir.h"
-#include "ut_viewport.h"
+void ut_viewport_exec();
 
-/******************************************************************************
- * The main function delegates the call to the individual unit test functions.
- *****************************************************************************/
-
-int main() {
-
-	ut_hex_exec();
-
-	ut_color_pair_exec();
-
-	ut_obj_area_exec();
-
-	ut_dir_exec();
-
-	ut_viewport_exec();
-
-	return EXIT_SUCCESS;
-}
+#endif /* INC_UT_VIEWPORT_H_ */

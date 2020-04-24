@@ -69,6 +69,7 @@ SRC_LIBS = \
 	$(SRC_DIR)/ut_color_pair.c \
 	$(SRC_DIR)/ut_obj_area.c \
 	$(SRC_DIR)/ut_dir.c \
+	$(SRC_DIR)/ut_viewport.c \
 
 OBJ_LIBS = $(subst $(SRC_DIR),$(BUILD_DIR),$(subst .c,.o,$(SRC_LIBS)))
 
