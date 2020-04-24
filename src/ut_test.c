@@ -27,6 +27,7 @@
 #include "ut_color_pair.h"
 #include "ut_hex.h"
 #include "ut_obj_area.h"
+#include "ut_dir.h"
 
 /******************************************************************************
  * The main function delegates the call to the individual unit test functions.
@@ -39,6 +40,8 @@ int main() {
 	ut_color_pair_exec();
 
 	ut_obj_area_exec();
+
+	ut_dir_exec();
 
 	return EXIT_SUCCESS;
 }
