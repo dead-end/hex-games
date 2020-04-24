@@ -37,4 +37,6 @@ void ut_check_short(const short current, const short expected, const char *msg);
 
 void ut_check_s_point(const s_point *current, const s_point *expected, const char *msg);
 
+void ut_check_bool(const bool cur, const bool exp, const char *msg);
+
 #endif /* INC_UT_UTILS_H_ */
