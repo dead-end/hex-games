@@ -51,6 +51,6 @@ typedef enum dir {
 
 char* e_dir_str(const e_dir dir);
 
-e_dir e_dir_mv(e_dir dir, const char chr);
+e_dir e_dir_mv(const e_dir dir, const char chr);
 
 #endif /* INC_HG_DIR_H_ */

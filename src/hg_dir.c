@@ -100,7 +100,7 @@ char* e_dir_str(const e_dir dir) {
  * r: move right and go forward.
  *****************************************************************************/
 
-e_dir e_dir_mv(e_dir dir, const char chr) {
+e_dir e_dir_mv(const e_dir dir, const char chr) {
 	e_dir result;
 
 	//
