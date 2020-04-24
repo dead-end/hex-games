@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-#include <stdbool.h>
-
 #include "hg_obj_area.h"
 #include "hg_common.h"
 
@@ -99,7 +97,7 @@ static void obj_area_init_empty(s_object **obj_area) {
 				obj_area_goto(&idx, dir, &neighbour);
 
 				//
-				// Ensure that the neighbour coordiantes are valid.
+				// Ensure that the neighbour coordinates are valid.
 				//
 				if (s_point_inside(&_dim_space, &neighbour)) {
 					object->neighbour[dir] = &obj_area[neighbour.row][neighbour.col];
@@ -115,7 +113,7 @@ static void obj_area_init_empty(s_object **obj_area) {
  * The function initializes the object area.
  *****************************************************************************/
 
-void obj_area_init(s_point *dim_hex) {
+void obj_area_init(const s_point *dim_hex) {
 
 	log_debug_str("Init object area.");
 
@@ -139,7 +137,8 @@ void obj_area_init(s_point *dim_hex) {
  * The function is called with a current position and a direction. It updates
  * the target point to the adjacent field in the given direction.
  *****************************************************************************/
-
+// TODO: unit test
+// => obj_area_init(); ... obj_area_free();
 void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 
 	switch (dir) {
@@ -309,7 +308,7 @@ s_object* obj_area_set_mv_marker(s_object *obj, const e_dir dir) {
  * r: move right and go forward.
  *****************************************************************************/
 
-s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
+s_object* obj_area_set_mv_marker_path(s_object *obj_from, const char *mv_path) {
 
 	log_debug("Object: %d/%d move with path: %s", obj_from->pos.row, obj_from->pos.col, mv_path);
 
@@ -326,7 +325,7 @@ s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *mv_path) {
 	//
 	// Move the pointer along the path.
 	//
-	for (char *ptr = mv_path; *ptr != '\0'; ptr++) {
+	for (const char *ptr = mv_path; *ptr != '\0'; ptr++) {
 
 		//
 		// Update the direction depending on the path character.

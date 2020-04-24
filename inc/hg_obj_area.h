@@ -85,7 +85,7 @@ extern s_object **_obj_area;
  * The definitions of the functions.
  *****************************************************************************/
 
-void obj_area_init(s_point *dim_hex);
+void obj_area_init(const s_point *dim_hex);
 
 void obj_area_free();
 
@@ -97,6 +97,6 @@ void obj_area_mv_ship(s_object *obj_from, s_object *obj_to, const e_dir dir);
 
 s_object* obj_area_set_mv_marker(s_object *obj_from, const e_dir);
 
-s_object* obj_area_set_mv_marker_path(s_object *obj_from, char *path);
+s_object* obj_area_set_mv_marker_path(s_object *obj_from, const char *mv_path);
 
 #endif /* INC_HG_OBJ_AREA_H_ */
