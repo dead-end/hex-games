@@ -365,7 +365,7 @@ int main() {
 			//
 			// From event x/y to relative hex index inside the viewport
 			//
-			hex_get_hex_idx(event.y, event.x, &hex_idx, &viewport.max);
+			hex_get_hex_idx(event.y, event.x, &viewport.max, &hex_idx);
 
 			//
 			// From the relative hex index to the absolute hex index.
