@@ -22,8 +22,6 @@
  * SOFTWARE.
  */
 
-#include <stdbool.h>
-
 #include "hg_viewport.h"
 
 /******************************************************************************
@@ -98,4 +96,29 @@ bool s_viewport_update(s_viewport *viewport, const s_point *pos_new) {
 	}
 
 	return do_update;
+}
+
+/******************************************************************************
+ * The function computes the upper left corner with an absolute index and a
+ * viewport.
+ *****************************************************************************/
+
+void s_viewport_get_ul(const s_viewport *viewport, const s_point *idx_abs, s_point *pos_ul) {
+
+	//
+	// Get the relative position inside the viewport.
+	//
+	const int idx_rel_row = idx_abs->row - viewport->pos.row;
+	const int idx_rel_col = idx_abs->col - viewport->pos.col;
+
+	//
+	// The row position toggles depending on odd or even (column) hex fields.
+	//
+	const int offset = viewport->pos.col % 2;
+
+	//
+	// Compute the position
+	//
+	pos_ul->row = (((idx_rel_col) + (offset)) % 2) * 2 + (idx_rel_row) * 4;
+	pos_ul->col = idx_rel_col * 3;
 }

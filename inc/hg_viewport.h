@@ -59,8 +59,6 @@ typedef struct {
 
 #define s_viewport_get_abs(v,r,t) (t)->row = (v)->pos.row + (r)->row;  (t)->col = (v)->pos.col + (r)->col
 
-#define s_viewport_get_rel(v,a,t) (t)->row = (a)->row - (v)->pos.row ;  (t)->col = (a)->col- (v)->pos.col
-
 /******************************************************************************
  * Definition of the functions.
  *****************************************************************************/
@@ -68,5 +66,7 @@ typedef struct {
 bool s_viewport_inside_viewport(const s_viewport *viewport, const s_point *idx);
 
 bool s_viewport_update(s_viewport *viewport, const s_point *idx);
+
+void s_viewport_get_ul(const s_viewport *viewport, const s_point *idx_abs, s_point *pos_ul);
 
 #endif /* INC_HG_VIEWPORT_H_ */
