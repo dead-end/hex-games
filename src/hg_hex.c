@@ -129,7 +129,7 @@ void hex_field_set_corners(s_hex_field *hex_field) {
  * field.
  *****************************************************************************/
 
-void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg) {
+void hex_field_print(WINDOW *win, const s_point *pos_ul, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg) {
 
 	s_hex_point *hex_point_fg;
 	s_hex_point *hex_point_bg;
@@ -139,11 +139,8 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field
 	wchar_t *chr;
 
 	//
-	// Get the upper left corner of the field.
+	// Loop over the points of the hex field
 	//
-	const int hex_ul_row = hex_field_ul_row(hex_idx->row, hex_idx->col);
-	const int hex_ul_col = hex_field_ul_col(hex_idx->row, hex_idx->col);
-
 	for (int row = 0; row < HEX_SIZE; row++) {
 		for (int col = 0; col < HEX_SIZE; col++) {
 
@@ -154,11 +151,15 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field
 				continue;
 			}
 
+			//
+			// Store the background hex point
+			//
 			hex_point_bg = &hex_field_bg->point[row][col];
 
 			//
 			// If the foreground hex field is undefined, we print the hex field
-			// of the space.
+			// of the space. This means, there is no ship or something else in
+			// the foreground.
 			//
 			if (hex_field_fg == NULL || hex_field_fg->point[row][col].chr == W_NULL) {
 				chr = hex_point_bg->chr;
@@ -171,7 +172,7 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field
 			else {
 
 				//
-				// Store the hex point
+				// Store the foreground hex point
 				//
 				hex_point_fg = &hex_field_fg->point[row][col];
 
@@ -189,7 +190,7 @@ void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field
 			// Set the color pair and print the character.
 			//
 			attron(COLOR_PAIR(color_pair));
-			mvwaddwstr(win, hex_ul_row + row, hex_ul_col + col, chr);
+			mvwaddwstr(win, pos_ul->row + row, pos_ul->col + col, chr);
 		}
 	}
 }

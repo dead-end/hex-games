@@ -61,10 +61,6 @@ typedef struct {
  * The macro definitions.
  *****************************************************************************/
 
-#define hex_field_ul_row(r,c) (((c) % 2) * 2 + (r) * 4)
-
-#define hex_field_ul_col(r,c) ((c) * 3)
-
 #define hex_field_is_corner(r,c) ((r) % 3 == 0 && (c) % 3 == 0)
 
 #define hex_point_set(h,c,f,b) (h).chr = (c); (h).fg = (f); (h).bg = (b)
@@ -84,7 +80,7 @@ void hex_get_hex_idx(const int win_row, const int win_col, s_point *hex_idx, con
 
 void hex_field_set_corners(s_hex_field *hex_field);
 
-void hex_field_print(WINDOW *win, const s_point *hex_idx, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg);
+void hex_field_print(WINDOW *win, const s_point *pos_ul, s_hex_field *hex_field_fg, s_hex_field *hex_field_bg);
 
 void hex_field_set_bg(s_hex_field *hex_field, const short bg);
 
