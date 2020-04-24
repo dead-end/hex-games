@@ -28,29 +28,6 @@
 #include "hg_marker_move.h"
 
 /******************************************************************************
- * The definition of the marker array.
- *****************************************************************************/
-
-#define MKR_MAX 32
-
-static s_marker_move _mkr_mv_array[MKR_MAX];
-
-static int _mkr_mv_num_used = 0;
-
-/******************************************************************************
- * The definition of the move marker colors. We have 3 colors for the shading
- * and a normal and highlighted color.
- *****************************************************************************/
-
-#define NUM_SHADES 3
-
-static short _mkr_clr_normal[NUM_SHADES];
-
-static short _mkr_clr_highlight[NUM_SHADES];
-
-static short _mkr_clr_fg;
-
-/******************************************************************************
  * The definition of arrow characters for the move markers.
  *****************************************************************************/
 
@@ -77,6 +54,29 @@ static void s_marker_move_init_arows() {
 	_arrow[DIR_SW] = MV_SW;
 	_arrow[DIR_NW] = MV_NW;
 }
+
+/******************************************************************************
+ * The definition of the move marker array.
+ *****************************************************************************/
+
+#define MKR_MAX 32
+
+static s_marker_move _mkr_mv_array[MKR_MAX];
+
+static int _mkr_mv_num_used = 0;
+
+/******************************************************************************
+ * The definition of the move marker colors. We have 3 colors for the shading
+ * and a normal and highlighted color.
+ *****************************************************************************/
+
+#define NUM_SHADES 3
+
+static short _mkr_clr_normal[NUM_SHADES];
+
+static short _mkr_clr_highlight[NUM_SHADES];
+
+static short _mkr_clr_fg;
 
 /******************************************************************************
  * The function initializes the colors and color pairs.
@@ -126,7 +126,8 @@ void s_marker_move_init() {
 }
 
 /******************************************************************************
- * The function returns the next unused s_marker_move instance from the array.
+ * The function returns the next unused s_marker_move instance from the array
+ * and initializes it with the given direction.
  *****************************************************************************/
 
 s_marker_move* s_marker_move_get(const e_dir dir) {
@@ -146,7 +147,8 @@ s_marker_move* s_marker_move_get(const e_dir dir) {
 }
 
 /******************************************************************************
- * The function resets the array of s_marker_move instances.
+ * The function resets the array of s_marker_move instances. This simple means
+ * to set the index of the next unused move marker to 0.
  *****************************************************************************/
 
 void s_marker_move_reset() {
@@ -173,10 +175,23 @@ void s_marker_move_to_field(const s_marker_move *marker, const int color_idx, s_
 	//
 	// If the move marker has a foreground character
 	//
+
+	//
+	// There are two types of move markers. The first move maker has no arrows.
+	// This marker is used to indicate the ship that moves. The other type has
+	// two arrows at fixed positions.
+	//
 	if (marker->dir != DIR_UNDEF) {
+
+		//
+		// Add the first arrow with the direction
+		//
 		hex_field->point[1][1].chr = _arrow[marker->dir];
 		hex_field->point[1][1].fg = _mkr_clr_fg;
 
+		//
+		// Add the second arrow with the direction
+		//
 		hex_field->point[2][1].chr = _arrow[marker->dir];
 		hex_field->point[2][1].fg = _mkr_clr_fg;
 	}
