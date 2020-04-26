@@ -86,10 +86,10 @@ s_marker* s_marker_get_move_marker(const e_marker type, const e_dir dir) {
  *The function resets the array of s_marker instances.
  *****************************************************************************/
 
-void s_marker_reset() {
+void s_marker_release() {
 	_mkr_num_used = 0;
 
-	s_marker_move_reset();
+	s_marker_move_release();
 }
 
 /******************************************************************************

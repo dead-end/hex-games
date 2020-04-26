@@ -47,7 +47,7 @@ void s_marker_move_init();
 
 s_marker_move* s_marker_move_get(const e_dir dir);
 
-void s_marker_move_reset();
+void s_marker_move_release();
 
 void s_marker_move_to_field(const s_marker_move *marker, const int color_idx, s_hex_field *hex_field, const bool highlight);
 

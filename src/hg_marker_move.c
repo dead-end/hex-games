@@ -151,7 +151,7 @@ s_marker_move* s_marker_move_get(const e_dir dir) {
  * to set the index of the next unused move marker to 0.
  *****************************************************************************/
 
-void s_marker_move_reset() {
+void s_marker_move_release() {
 	_mkr_mv_num_used = 0;
 }
 

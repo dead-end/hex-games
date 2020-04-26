@@ -57,7 +57,7 @@ typedef struct {
 
 void s_marker_init();
 
-void s_marker_reset();
+void s_marker_release();
 
 s_marker* s_marker_get_move_marker(const e_marker type, const e_dir dir);
 
