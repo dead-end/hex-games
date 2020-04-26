@@ -32,7 +32,7 @@
 
 static s_point _dim_space;
 
-s_object **_obj_area;
+s_object **_obj_area = NULL;
 
 /******************************************************************************
  * The function allocates the array for the object area.
@@ -63,6 +63,7 @@ void obj_area_free() {
 	}
 
 	free(_obj_area);
+	_obj_area = NULL;
 }
 
 /******************************************************************************
@@ -137,8 +138,7 @@ void obj_area_init(const s_point *dim_hex) {
  * The function is called with a current position and a direction. It updates
  * the target point to the adjacent field in the given direction.
  *****************************************************************************/
-// TODO: unit test
-// => obj_area_init(); ... obj_area_free();
+
 void obj_area_goto(const s_point *from, const e_dir dir, s_point *to) {
 
 	switch (dir) {
