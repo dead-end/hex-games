@@ -141,6 +141,81 @@ static void test_s_viewport_get_ul() {
 }
 
 /******************************************************************************
+ * The function is a helper function for the s_viewport_mv_diff() test.
+ *****************************************************************************/
+
+#define MSG_SIZE 32
+
+static void help_s_viewport_mv_diff(const s_point *diff, const bool exp_change, const s_point *exp_pos, const s_point *pos) {
+	char msg[MSG_SIZE];
+
+	//
+	// Create a message for the test
+	//
+	snprintf(msg, MSG_SIZE, "diff %d/%d %s pos: %d/%d", diff->row, diff->col, bool_str(exp_change), exp_pos->row, exp_pos->col);
+
+	//
+	// Setup viewport
+	//
+	s_viewport viewport = { .max.row = 8, .max.col = 8, .dim.row = 4, .dim.col = 4, .pos.row = pos->row, .pos.col = pos->col };
+
+	const bool cur_change = s_viewport_mv_diff(&viewport, &(s_point ) { .row = diff->row, .col = diff->col });
+
+	//
+	// Ensure that the results are correct.
+	//
+	ut_check_bool(cur_change, exp_change, msg);
+	ut_check_s_point(&viewport.pos, exp_pos, msg);
+}
+
+/******************************************************************************
+ * The function checks the s_viewport_mv_diff() function.
+ *
+ * 01234567
+ * XXXX----
+ * --XXXX--
+ * ----XXXX
+ *****************************************************************************/
+
+static void test_s_viewport_mv_diff() {
+	s_point pos;
+
+	log_debug_str("start");
+
+	//
+	// 01234567
+	// --XXXX--
+	//
+	s_point_set(&pos, 2, 2);
+
+	help_s_viewport_mv_diff(&(s_point ) { .row = 0, .col = 0 }, false, &(s_point ) { .row = 2, .col = 2 }, &pos);
+
+	help_s_viewport_mv_diff(&(s_point ) { .row = -1, .col = -1 }, true, &(s_point ) { .row = 1, .col = 1 }, &pos);
+	help_s_viewport_mv_diff(&(s_point ) { .row = -2, .col = -2 }, true, &(s_point ) { .row = 0, .col = 0 }, &pos);
+	help_s_viewport_mv_diff(&(s_point ) { .row = -3, .col = -3 }, true, &(s_point ) { .row = 0, .col = 0 }, &pos);
+
+	help_s_viewport_mv_diff(&(s_point ) { .row = 1, .col = 1 }, true, &(s_point ) { .row = 3, .col = 3 }, &pos);
+	help_s_viewport_mv_diff(&(s_point ) { .row = 2, .col = 2 }, true, &(s_point ) { .row = 4, .col = 4 }, &pos);
+	help_s_viewport_mv_diff(&(s_point ) { .row = 3, .col = 3 }, true, &(s_point ) { .row = 4, .col = 4 }, &pos);
+
+	//
+	// 01234567
+	// XXXX----
+	//
+	s_point_set(&pos, 0, 0);
+	help_s_viewport_mv_diff(&(s_point ) { .row = -1, .col = -1 }, false, &(s_point ) { .row = 0, .col = 0 }, &pos);
+
+	//
+	// 01234567
+	// ----XXXX
+	//
+	s_point_set(&pos, 4, 4);
+	help_s_viewport_mv_diff(&(s_point ) { .row = 1, .col = 1 }, false, &(s_point ) { .row = 4, .col = 4 }, &pos);
+
+	log_debug_str("end");
+}
+
+/******************************************************************************
  * The function is the a wrapper, that triggers the internal unit tests.
  *****************************************************************************/
 
@@ -149,4 +224,6 @@ void ut_viewport_exec() {
 	test_s_viewport_get_ul();
 
 	test_s_viewport_inside_viewport();
+
+	test_s_viewport_mv_diff();
 }

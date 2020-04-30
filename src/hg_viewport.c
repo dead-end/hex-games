@@ -53,7 +53,7 @@ bool s_viewport_inside_viewport(const s_viewport *viewport, const s_point *idx) 
 bool s_viewport_update(s_viewport *viewport, const s_point *pos_new) {
 	bool do_update = false;
 
-	log_debug("Viewport pos: %d/%d", viewport->pos.row, viewport->pos.col);
+	log_debug("Viewport pos: %d/%d new: %d/%d", viewport->pos.row, viewport->pos.col, pos_new->row, pos_new->col);
 
 	//
 	// Update row
@@ -96,6 +96,46 @@ bool s_viewport_update(s_viewport *viewport, const s_point *pos_new) {
 	}
 
 	return do_update;
+}
+
+/******************************************************************************
+ * The function moves the viewport in to a given direction.
+ *****************************************************************************/
+
+bool s_viewport_mv_diff(s_viewport *viewport, const s_point *diff) {
+
+	s_point new_pos = { .row = viewport->pos.row + diff->row, .col = viewport->pos.col + diff->col };
+
+	//
+	// Update the row if necessary
+	//
+	if (new_pos.row < 0) {
+		new_pos.row = 0;
+
+	} else if (new_pos.row + viewport->dim.row > viewport->max.row) {
+		new_pos.row = viewport->max.row - viewport->dim.row;
+	}
+
+	//
+	// Update the column if necessary
+	//
+	if (new_pos.col < 0) {
+		new_pos.col = 0;
+
+	} else if (new_pos.col + viewport->dim.col > viewport->max.col) {
+		new_pos.col = viewport->max.col - viewport->dim.col;
+	}
+
+	if (s_point_same(&viewport->pos, &new_pos)) {
+		return false;
+	}
+
+	log_debug("pos from: %d/%d to: %d/%d", viewport->pos.row, viewport->pos.col, new_pos.row, new_pos.col);
+
+	viewport->pos.row = new_pos.row;
+	viewport->pos.col = new_pos.col;
+
+	return true;
 }
 
 /******************************************************************************
